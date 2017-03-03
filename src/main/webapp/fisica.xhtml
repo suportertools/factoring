@@ -1,0 +1,272 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:subview id="header">
+        <ui:include src="template/header.xhtml"/>
+        <ui:include src="template/loading.xhtml"/>
+    </f:subview>
+
+    <h:body>
+        <div class="page-max-1200">
+            <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" columnClasses="ui-grid-col-12" layout="grid">
+                <p:outputLabel value="FÍSICA" style="font-weight: bold"/>
+                <hr />
+            </p:panelGrid>
+        </div>
+
+        <h:form id="form_fisica">
+            <p:defaultCommand target="btn_salvar_alterar" />
+
+            <div class="ui-fluid page-max-1200">
+                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-3, ui-grid-col-9" layout="grid">
+                    <h:column>
+                        <p:menu>
+                            <p:submenu label="Ações">
+                                <p:menuitem id="btn_salvar_alterar" value="#{fisicaController.fisica.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{fisicaController.salvar()}" icon="fa fa-fw fa-save" update="@form">
+                                    <p:confirm header="#{fisicaController.fisica.id eq -1 ? 'Salvar' : 'Alterar'} Pessoa Física" message="#{fisicaController.fisica.id eq -1 ? 'Salvar' : 'Alterar'} esta Pessoa Física?" icon="ui-icon-alert" />
+                                </p:menuitem>
+                                <p:menuitem value="Novo" actionListener="#{fisicaController.novo()}" icon="fa fa-fw fa-plus" update="@form" />
+                                <p:menuitem value="Excluir" action="#{fisicaController.excluir()}" update="@form" icon="fa fa-fw fa-close" disabled="#{fisicaController.fisica.id eq -1}">
+                                    <p:confirm header="Excluir Pessoa Física" message="Deseja realmente excluir esta Pessoa Física?" icon="ui-icon-alert" />
+                                </p:menuitem>
+                                <p:menuitem value="Lista de Físicas" action="lista_fisica" icon="fa fa-fw fa-list-ol" />
+                            </p:submenu>
+                        </p:menu>
+                    </h:column>
+
+                    <h:column>
+                        <h:panelGrid columns="3" style="width: 100%" columnClasses="ui-grid-col-8, ui-grid-col-2, ui-grid-col-2">
+                            <h:column>
+                                <p:outputLabel value="Nome"/>
+                                <p:inputText value="#{fisicaController.fisica.pessoa.nome}">
+                                    <p:ajax update="@this" global="false"/>
+                                </p:inputText>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="CPF"/>
+                                <p:inputMask value="#{fisicaController.fisica.pessoa.documento}" mask="999.999.999-99" />
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Nascimento"/>
+                                <p:calendar value="#{fisicaController.fisica.nascimento}" pattern="dd/MM/yyyy" mask="true" />
+                            </h:column>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="3" columnClasses="ui-grid-col-4, ui-grid-col-4, ui-grid-col-4" style="width: 100%">
+                            <h:column>
+                                <p:outputLabel value="Telefone 1"/>
+                                <p:inputMask value="#{fisicaController.fisica.pessoa.telefone1}" mask="(99) 9999-9999">
+                                    <p:ajax update="@this" global="false"/>
+                                </p:inputMask>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Telefone 2"/>
+                                <p:inputMask value="#{fisicaController.fisica.pessoa.telefone2}" mask="(99) 9999-9999">
+                                    <p:ajax update="@this" global="false"/>
+                                </p:inputMask>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Celular"/>
+                                <p:inputMask value="#{fisicaController.fisica.pessoa.telefone3}" mask="(99) 99999-9999">
+                                    <p:ajax update="@this" global="false"/>
+                                </p:inputMask>
+                            </h:column>
+                        </h:panelGrid>
+
+                        <h:panelGrid style="width: 100%">
+                            <p:outputLabel value="Cônjugue"/>
+                            <p:inputText value="#{fisicaController.fisica.conjugue}">
+                                <p:ajax update="@this" global="false"/>
+                            </p:inputText>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="2" style="width: 100%">
+                            <h:column>
+                                <p:outputLabel value="Pai"/>
+                                <p:inputText value="#{fisicaController.fisica.pai}">
+                                    <p:ajax update="@this" global="false"/>
+                                </p:inputText>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Mãe"/>
+                                <p:inputText value="#{fisicaController.fisica.mae}">
+                                    <p:ajax update="@this" global="false"/>
+                                </p:inputText>
+                            </h:column>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="1" style="width: 100%">
+                            <p:outputLabel value="Empresa da Pessoa"/>
+                            <h:panelGrid columns="3" style="width: 100%" columnClasses="ui-grid-col-6, ui-grid-col-3, ui-grid-col-3">
+                                <p:inputText value="#{fisicaController.fisica.juridica.pessoa.nome}" disabled="true" style="opacity: .8"/>
+                                <p:commandButton value="Adicionar Empresa" disabled="#{fisicaController.fisica.id eq -1}" actionListener="#{fisicaController.pesquisaEmpresa.novo()}" oncomplete="PF('dlg_adicionar_empresa').show()" update="form_pesquisa_empresa:tbl_lista_empresa form_pesquisa_empresa:panel_adicionar_pesquisa"/>
+                                <p:commandButton value="Remover Empresa" disabled="#{fisicaController.fisica.id eq -1}" action="#{fisicaController.removerEmpresa()}" update="@form" global="false"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+
+                        <h:panelGrid style="width: 100%">
+                            <p:outputLabel value="Observação"/>
+                            <p:inputTextarea value="#{fisicaController.fisica.pessoa.observacao}">
+                                <p:ajax update="@this" global="false"/>
+                            </p:inputTextarea>
+                        </h:panelGrid>
+
+                        <h:panelGrid style="width: 100%">
+                            <p:outputLabel value="Lista de Endereços" />
+                        </h:panelGrid>
+
+                        <p:dataTable id="tbl_lista_pessoa_endereco" value="#{fisicaController.listaEndereco}" var="linha_endereco" emptyMessage="Nenhum Endereço Adicionado.">
+                            <p:column headerText="Tipo" style="width: 80px">
+                                <p:commandLink value="#{linha_endereco.tipoEndereco.descricao}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                            </p:column>
+
+                            <p:column headerText="Logr" style="width: 60px; text-align: center">
+                                <p:commandLink value="#{linha_endereco.logradouro}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                            </p:column>
+
+                            <p:column headerText="Endereço">
+                                <p:commandLink value="#{linha_endereco.endereco}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                            </p:column>
+
+                            <p:column headerText="Número" style="width: 80px; text-align: center">
+                                <p:commandLink value="#{linha_endereco.numero}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                            </p:column>
+
+                            <p:column headerText="Bairro" style="width: 100px">
+                                <p:commandLink value="#{linha_endereco.bairro}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                            </p:column>
+
+                            <p:column headerText="Cidade" style="width: 100px">
+                                <p:commandLink value="#{linha_endereco.cidade.cidade} - #{linha_endereco.cidade.uf}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                            </p:column>
+                            
+                            <p:column style="width:32px">
+                                <p:commandButton icon="fa fa-fw fa-remove" action="#{fisicaController.excluirEndereco(linha_endereco)}" update="form_fisica">
+                                    <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                        <p:commandButton value="Adicionar Endereço" actionListener="#{fisicaController.pesquisaEndereco.novo()}" disabled="#{fisicaController.fisica.id eq -1}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco:panel_pesquisar_endereco"/>
+                    </h:column>
+                </p:panelGrid>
+            </div>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" style="background: red; border-color: red"/>
+                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+        </h:form>
+
+        <h:form id="form_pesquisa_empresa">
+            <p:defaultCommand target="btn_pesquisar_empresa" />
+
+            <p:dialog widgetVar="dlg_adicionar_empresa" header="Adicionar Empresa para esta Pessoa" modal="true" width="650" resizable="false" responsive="true" position="top">
+                <div class="ui-fluid">
+                    <p:panelGrid id="panel_adicionar_pesquisa" columns="2" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-9, ui-grid-col-3" layout="grid">
+                        <h:column>
+                            <p:inputText value="#{fisicaController.pesquisaEmpresa.nome}" placeholder="Nome da Empresa"/>
+                        </h:column>
+                        <h:column>
+                            <p:commandButton id="btn_pesquisar_empresa" value="Pesquisar" action="#{fisicaController.pesquisaEmpresa.loadListaEmpresa()}" update="tbl_lista_empresa"/>
+                        </h:column>
+                    </p:panelGrid>
+
+                    <p:dataTable id="tbl_lista_empresa" value="#{fisicaController.pesquisaEmpresa.listaEmpresa}" var="linha_empresa" emptyMessage="Nenhuma Empresa Encontrada.">
+                        <p:column headerText="#" style="width: 60px">
+                            <p:outputLabel value="#{linha_empresa.id}" />
+                        </p:column>
+
+                        <p:column headerText="Nome" >
+                            <p:commandLink value="#{linha_empresa.pessoa.nome}" actionListener="#{fisicaController.pesquisaEmpresa.selecionar(linha_empresa)}" oncomplete="PF('dlg_adicionar_empresa').hide()" update="form_fisica"/>
+                        </p:column>
+
+                        <p:column headerText="CNPJ" style="width: 150px">
+                            <p:commandLink value="#{linha_empresa.pessoa.documento}" actionListener="#{fisicaController.pesquisaEmpresa.selecionar(linha_empresa)}" oncomplete="PF('dlg_adicionar_empresa').hide()" update="form_fisica"/>
+                        </p:column>
+                    </p:dataTable>
+                </div>
+            </p:dialog>
+        </h:form>
+
+        <h:form id="form_pesquisa_endereco">
+            <p:defaultCommand target="btn_pesquisar_endereco" />
+            
+            <p:dialog widgetVar="dlg_pesquisa_endereco" header="Pesquisar Endereço" modal="true" width="650" resizable="false" responsive="true" position="top">
+                <h:panelGroup id="panel_pesquisar_endereco" class="ui-fluid" layout="block">
+                    <p:focus context="panel_pesquisar_endereco" />
+                    <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-9, ui-grid-col-3" layout="grid">
+                        <h:column>
+                            <p:inputMask id="input_cep" value="#{fisicaController.pesquisaEndereco.endereco.cep}" placeholder="Digite o CEP" mask="99.999-999" disabled="#{fisicaController.pesquisaEndereco.endereco.id ne -1}" />
+                        </h:column>
+
+                        <h:column>
+                            <p:commandButton id="btn_pesquisar_endereco" value="Pesquisar" action="#{fisicaController.pesquisaEndereco.loadListaEndereco()}" update="panel_cep_encontrado" disabled="#{fisicaController.pesquisaEndereco.endereco.id ne -1}"/>
+                        </h:column>
+                    </p:panelGrid>
+
+                    <p:dataTable id="tbl_lista_endereco" value="#{fisicaController.pesquisaEndereco.listaEndereco}" var="linha_endereco" emptyMessage="Nenhum Endereço Encontrado." rendered="false">
+                        <p:column headerText="#" style="width: 60px">
+                            <p:outputLabel value="#{linha_endereco.id}" />
+                        </p:column>
+
+                        <p:column headerText="Endereço" >
+                            <p:commandLink value="#{linha_endereco.endereco}" actionListener="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').hide()" update="form_fisica"/>
+                        </p:column>
+                    </p:dataTable>
+
+                    <h:panelGrid id="panel_cep_encontrado" styleClass="ui-panelgrid-blank" style="width: 100%">
+                        <p:messages closable="true" showDetail="true" />
+                        <h:panelGrid rendered="#{fisicaController.pesquisaEndereco.endereco.logradouro ne ''}">
+                            <p:outputLabel value="Endereço" style="font-weight: bold"/>
+                            <p:outputLabel value="#{fisicaController.pesquisaEndereco.endereco.logradouro} #{fisicaController.pesquisaEndereco.endereco.endereco}" />
+                            <p:outputLabel value="#{fisicaController.pesquisaEndereco.endereco.bairro}" />
+                            <p:outputLabel value="#{fisicaController.pesquisaEndereco.endereco.cidade.cidade} - #{fisicaController.pesquisaEndereco.endereco.cidade.uf}" />
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="3" rendered="#{fisicaController.pesquisaEndereco.endereco.logradouro ne ''}" style="width: 100%">
+                            <h:column>
+                                <p:outputLabel value="Tipo" /><br />
+                                <p:selectOneMenu value="#{fisicaController.pesquisaEndereco.indexTipoEndereco}">
+                                    <p:ajax event="change" update="@this" listener="#{fisicaController.pesquisaEndereco.selecionaTipoEndereco}" global="false"/>
+                                    <f:selectItems value="#{fisicaController.pesquisaEndereco.listaTipoEndereco}"/>
+                                </p:selectOneMenu>
+                            </h:column>
+                            <h:column>
+                                <p:outputLabel value="Número" /><br />
+                                <p:inputText value="#{fisicaController.pesquisaEndereco.endereco.numero}">
+                                    <p:ajax event="change" update="@this" global="false"/>
+                                </p:inputText>
+                            </h:column>
+                            <h:column>
+                                <p:outputLabel value="Complemento" /><br />
+                                <p:inputText value="#{fisicaController.pesquisaEndereco.endereco.complemento}">
+                                    <p:ajax event="change" update="@this" global="false" />
+                                </p:inputText>
+                            </h:column>
+                            <p:commandButton value="#{fisicaController.pesquisaEndereco.endereco.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{fisicaController.salvarEndereco()}" update="panel_cep_encontrado"/>
+                            <p:commandButton value="Novo" action="#{fisicaController.pesquisaEndereco.novo()}" update="panel_pesquisar_endereco"/>
+                            <p:commandButton value="Excluir" action="#{fisicaController.excluirEndereco(null)}" update="form_fisica:tbl_lista_pessoa_endereco panel_pesquisar_endereco" disabled="#{fisicaController.pesquisaEndereco.endereco.id eq -1}">
+                                <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
+                            </p:commandButton>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                </h:panelGroup>
+            </p:dialog>
+        </h:form>
+    </h:body>
+
+    <f:subview id="footer">
+        <ui:include src="template/footer.xhtml"/>
+    </f:subview>
+</html>
+

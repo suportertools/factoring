@@ -1,0 +1,68 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config version="2.2"
+              xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-facesconfig_2_2.xsd">
+    <navigation-rule>
+
+        <navigation-case>
+            <from-outcome>index</from-outcome>
+            <to-view-id>/index.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>dashboard</from-outcome>
+            <to-view-id>/dashboard.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>fisica</from-outcome>
+            <to-view-id>/fisica.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>lista_fisica</from-outcome>
+            <to-view-id>/lista_fisica.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>juridica</from-outcome>
+            <to-view-id>/juridica.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>lista_juridica</from-outcome>
+            <to-view-id>/lista_juridica.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>usuario</from-outcome>
+            <to-view-id>/usuario.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>lista_usuario</from-outcome>
+            <to-view-id>/lista_usuario.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>lancamento</from-outcome>
+            <to-view-id>/lancamento.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>relatorio_financeiro</from-outcome>
+            <to-view-id>/relatorio_financeiro.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+    </navigation-rule>
+</faces-config>

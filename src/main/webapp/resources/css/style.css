@@ -1,0 +1,9 @@
+.panel-grid-top td {
+    vertical-align: top;
+}
+
+.page-max-1200 {
+    margin: 0 auto; 
+    border: 0; 
+    max-width: 1200px;
+}

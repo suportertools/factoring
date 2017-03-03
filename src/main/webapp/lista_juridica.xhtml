@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:subview id="header">
+        <ui:include src="template/header.xhtml"/>
+    </f:subview>
+
+    <h:body onload="#{juridicaController.loadPagina()}">
+        <div class="page-max-1200">
+            <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" columnClasses="ui-grid-col-12" layout="grid">
+                <p:outputLabel value="LISTA DE PESSOAS JURÍDICA" style="font-weight: bold"/>
+                <hr />
+            </p:panelGrid>
+
+            <h:panelGrid>
+                <h:form id="form_pesquisa_juridica">
+                    <p:defaultCommand target="btn_pesquisar_juridica" />
+                    <div class="ui-fluid">
+                        <p:panelGrid styleClass="ui-panelgrid-blank" columns="3" columnClasses="ui-grid-col-7, ui-grid-col-2, ui-grid-col-3" layout="grid">
+                            <p:inputText value="#{juridicaController.pesquisaJuridica.nome}" placeholder="Nome da Pessoa Jurídica"/>
+                            <p:commandButton id="btn_pesquisar_juridica" value="Pesquisar" action="#{juridicaController.pesquisaJuridica.loadListaJuridica()}" update="form_lista_juridica"/>
+                            <p:commandButton value="Cadastrar Pessoa Jurídica" action="#{juridicaController.paginaCadastrarJuridica()}" />
+                        </p:panelGrid>
+                    </div>
+                </h:form>
+
+                <h:form id="form_lista_juridica">
+                    <h:panelGrid>
+                        <p:dataTable value="#{juridicaController.pesquisaJuridica.listaJuridica}" var="linha_juridica" emptyMessage="Nenhuma Pessoa Juridica Encontrada.">
+                            <p:column headerText="#" style="width: 50px; text-align: center">
+                                <p:outputLabel value="#{linha_juridica.id}" />
+                            </p:column>
+
+                            <p:column headerText="Nome">
+                                <p:commandLink value="#{linha_juridica.pessoa.nome}" action="#{juridicaController.editar(linha_juridica)}"/>
+                            </p:column>
+
+                            <p:column headerText="CNPJ" style="width: 150px; text-align: center">
+                                <p:commandLink value="#{linha_juridica.pessoa.documento}" action="#{juridicaController.editar(linha_juridica)}" />
+                            </p:column>
+
+
+                            <p:column headerText="Inscrição Estadual" style="width: 90px; text-align: center">
+                                <p:commandLink value="#{linha_juridica.inscricaoEstadual}" action="#{juridicaController.editar(linha_juridica)}" />
+                            </p:column>
+
+                            <p:column headerText="Cadastro" style="width: 90px; text-align: center">
+                                <p:commandLink value="#{linha_juridica.pessoa.cadastroString}" action="#{juridicaController.editar(linha_juridica)}" />
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                </h:form>
+            </h:panelGrid>
+        </div>
+    </h:body>
+
+    <f:subview id="footer">
+        <ui:include src="template/footer.xhtml"/>
+    </f:subview>
+</html>
+

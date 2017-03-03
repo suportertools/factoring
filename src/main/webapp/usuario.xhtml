@@ -1,0 +1,106 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:subview id="header">
+        <ui:include src="template/header.xhtml"/>
+        <ui:include src="template/loading.xhtml"/>
+    </f:subview>
+
+    <h:body>
+        <div class="page-max-1200">
+            <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" columnClasses="ui-grid-col-12" layout="grid">
+                <p:outputLabel value="USUÁRIO" style="font-weight: bold"/>
+                <hr />
+            </p:panelGrid>
+        </div>
+
+        <h:form id="form_usuario">
+            <p:defaultCommand target="btn_salvar_alterar" />
+            <div class="ui-fluid page-max-1200">
+                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-3, ui-grid-col-9" layout="grid">
+                    <h:column>
+                        <p:menu>
+                            <p:submenu label="Ações">
+                                <p:menuitem id="btn_salvar_alterar" value="#{usuarioController.usuario.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{usuarioController.salvar()}" icon="fa fa-fw fa-save" update="@form">
+                                    <p:confirm header="#{usuarioController.usuario.id eq -1 ? 'Salvar' : 'Alterar'} Usuário" message="#{usuarioController.usuario.id eq -1 ? 'Salvar' : 'Alterar'} este Usuário?" icon="ui-icon-alert" />
+                                </p:menuitem>
+                                <p:menuitem value="Novo" actionListener="#{usuarioController.novo()}" icon="fa fa-fw fa-plus" update="@form" />
+                                <p:menuitem value="Excluir" action="#{usuarioController.excluir()}" update="@form" icon="fa fa-fw fa-close" disabled="#{usuarioController.usuario.id eq -1}">
+                                    <p:confirm header="Excluir Usuário" message="Deseja realmente excluir este usuário?" icon="ui-icon-alert" />
+                                </p:menuitem>
+                                <p:menuitem value="Lista de Usuários" action="lista_usuario" icon="fa fa-fw fa-list-ol" />
+                            </p:submenu>
+                        </p:menu>
+                    </h:column>
+
+                    <h:column>
+                        <h:panelGrid style="width: 100%">
+                            <p:outputLabel value="Nome" style="font-weight: bold"/>
+                            <p:inputText value="#{usuarioController.usuario.nome}">
+                                <p:ajax update="@this" global="false"/>
+                            </p:inputText>
+                        </h:panelGrid>
+
+                        <h:panelGrid style="width: 100%">
+                            <p:outputLabel value="Login" style="font-weight: bold"/>
+                            <p:inputText value="#{usuarioController.usuario.login}">
+                                <p:ajax update="@this" global="false"/>
+                            </p:inputText>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="2" style="width: 100%" rendered="#{usuarioController.usuario.id eq -1}">
+                            <h:column>
+                                <p:outputLabel value="Senha" style="font-weight: bold"/><br />
+                                <p:password value="#{usuarioController.usuario.senha}">
+
+                                </p:password>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Confirmar Senha" style="font-weight: bold"/><br />
+                                <p:password value="#{usuarioController.confirmarSenha}">
+
+                                </p:password>
+                            </h:column>
+                        </h:panelGrid>
+
+                        <h:panelGrid rendered="#{usuarioController.usuario.id ne -1}">
+                            <p:commandButton value="Alterar Senha" onclick="PF('dlg_alterar_senha').show()"/>
+                        </h:panelGrid>
+                    </h:column>
+                </p:panelGrid>
+            </div>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" style="background: red; border-color: red"/>
+                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+            </p:confirmDialog>
+
+            <p:dialog header="Alterar Senha" widgetVar="dlg_alterar_senha" modal="true" style="width: 400px;" resizable="false">
+                <h:panelGrid style="width: 100%">
+                    <p:outputLabel value="Nova Senha" />
+                    <p:password value="#{usuarioController.novaSenha}" style="width: 99%"/>
+                </h:panelGrid>
+
+                <h:panelGrid style="width: 100%">
+                    <p:outputLabel value="Confirma Nova Senha" />
+                    <p:password value="#{usuarioController.confirmaNovaSenha}" style="width: 99%"/>
+                </h:panelGrid>
+
+                <h:panelGrid style="width: 100%">
+                    <p:commandButton value="Alterar" action="#{usuarioController.alterarSenha}" update="@form"/>
+                </h:panelGrid>
+            </p:dialog>  
+        </h:form>
+    </h:body>
+
+    <f:subview id="footer">
+        <ui:include src="template/footer.xhtml"/>
+    </f:subview>
+</html>
+

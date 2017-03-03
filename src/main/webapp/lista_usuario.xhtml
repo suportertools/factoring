@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:subview id="header">
+        <ui:include src="template/header.xhtml"/>
+    </f:subview>
+
+    <h:body onload="#{usuarioController.loadPagina()}">
+        <div class="page-max-1200">
+            <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" columnClasses="ui-grid-col-12" layout="grid">
+                <p:outputLabel value="LISTA DE USUÁRIOS" style="font-weight: bold"/>
+                <hr />
+            </p:panelGrid>
+
+            <h:panelGrid>
+                <h:form>
+                    <h:panelGrid style="width: 100%;">
+                        <p:commandButton value="Cadastrar Usuário" action="#{usuarioController.paginaCadastrarUsuario()}" style="float: right"/>
+                    </h:panelGrid>
+
+                    <h:panelGrid>
+                        <p:dataTable value="#{usuarioController.listaUsuario}" var="usuario" emptyMessage="Nenhum Usuário Encontrado.">
+                            <p:column headerText="#" style="width: 50px; text-align: center">
+                                <p:outputLabel value="#{usuario.id}" />
+                            </p:column>
+
+                            <p:column headerText="Nome">
+                                <p:commandLink value="#{usuario.nome}" action="#{usuarioController.editar(usuario)}"/>
+                            </p:column>
+
+                            <p:column headerText="Login">
+                                <p:commandLink value="#{usuario.login}" action="#{usuarioController.editar(usuario)}" />
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                </h:form>
+            </h:panelGrid>
+        </div>
+    </h:body>
+
+    <f:subview id="footer">
+        <ui:include src="template/footer.xhtml"/>
+    </f:subview>
+</html>
+

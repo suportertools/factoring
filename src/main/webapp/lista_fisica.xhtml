@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+    <f:subview id="header">
+        <ui:include src="template/header.xhtml"/>
+    </f:subview>
+
+    <h:body onload="#{fisicaController.loadPagina()}">
+        <div class="page-max-1200">
+            <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" columnClasses="ui-grid-col-12" layout="grid">
+                <p:outputLabel value="LISTA DE PESSOAS FÍSICA" style="font-weight: bold"/>
+                <hr />
+            </p:panelGrid>
+
+            <h:panelGrid>
+                <h:form id="form_pesquisa_fisica">
+                    <p:defaultCommand target="btn_pesquisar_fisica" />
+                    <div class="ui-fluid">
+                        <p:panelGrid styleClass="ui-panelgrid-blank" columns="3" columnClasses="ui-grid-col-7, ui-grid-col-2, ui-grid-col-3" layout="grid">
+                            <p:inputText value="#{fisicaController.pesquisaFisica.nome}" placeholder="Nome da Pessoa Física"/>
+                            <p:commandButton id="btn_pesquisar_fisica" value="Pesquisar" action="#{fisicaController.pesquisaFisica.loadListaFisica()}" update="form_lista_fisica"/>
+                            <p:commandButton value="Cadastrar Pessoa Física" action="#{fisicaController.paginaCadastrarFisica()}"/>
+                        </p:panelGrid>
+                    </div>
+                </h:form>
+                
+                <h:form id="form_lista_fisica">
+                    <h:panelGrid>
+                        <p:dataTable value="#{fisicaController.pesquisaFisica.listaFisica}" var="linha_fisica" emptyMessage="Nenhuma Pessoa Física Encontrada.">
+                            <p:column headerText="#" style="width: 50px; text-align: center">
+                                <p:outputLabel value="#{linha_fisica.id}" />
+                            </p:column>
+
+                            <p:column headerText="Nome">
+                                <p:commandLink value="#{linha_fisica.pessoa.nome}" action="#{fisicaController.editar(linha_fisica)}"/>
+                            </p:column>
+
+                            <p:column headerText="CPF" style="width: 120px; text-align: center">
+                                <p:commandLink value="#{linha_fisica.pessoa.documento}" action="#{fisicaController.editar(linha_fisica)}" />
+                            </p:column>
+
+
+                            <p:column headerText="Nascimento" style="width: 90px; text-align: center">
+                                <p:commandLink value="#{linha_fisica.nascimentoString}" action="#{fisicaController.editar(linha_fisica)}" />
+                            </p:column>
+
+                            <p:column headerText="Empresa">
+                                <p:commandLink value="#{linha_fisica.juridica.pessoa.nome}" action="#{fisicaController.editar(linha_fisica)}" />
+                            </p:column>
+
+                            <p:column headerText="Cadastro" style="width: 90px; text-align: center">
+                                <p:commandLink value="#{linha_fisica.pessoa.cadastroString}" action="#{fisicaController.editar(linha_fisica)}" />
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                </h:form>
+            </h:panelGrid>
+        </div>
+    </h:body>
+
+    <f:subview id="footer">
+        <ui:include src="template/footer.xhtml"/>
+    </f:subview>
+</html>
+

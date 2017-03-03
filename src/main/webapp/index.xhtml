@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <f:view>
+        <f:subview id="header">
+            <ui:include src="template/header.xhtml"/>
+            <ui:include src="template/loading.xhtml"/>
+        </f:subview>
+
+        <h:body>
+            <h:form id="form_login">
+                <div class="container" style="margin: 0 auto; width: 300px">
+                    <div class="ui-fluid" style="margin-top: 150px;  margin: 0 auto;">
+                        <h3><p:outputLabel value="ENTRAR NO SISTEMA" /></h3>
+                        <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-12" layout="grid" style="background: #f0f0f0; padding: 20px">
+                            <p:outputLabel value="Login" style="font-weight: bold"/>
+                            <p:inputText id="input_usuario" value="#{usuarioController.usuario.login}" placeholder="Digite o Login">
+                                <p:focus for="input_usuario"/>
+                            </p:inputText>
+                            
+                            <p:outputLabel value="Senha" style="font-weight: bold"/>
+                            <p:password value="#{usuarioController.usuario.senha}" placeholder="Digite a Senha"/>
+                            
+                            <p:commandButton value="ENTRAR" action="#{usuarioController.entrar()}" />
+                        </p:panelGrid>
+                    </div>
+                </div>
+            </h:form>
+        </h:body>
+
+        <f:subview id="footer">
+            <ui:include src="template/footer.xhtml"/>
+        </f:subview>
+    </f:view>
+</html>
+
