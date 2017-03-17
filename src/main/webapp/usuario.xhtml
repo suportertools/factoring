@@ -11,7 +11,7 @@
         <ui:include src="template/loading.xhtml"/>
     </f:subview>
 
-    <h:body>
+    <h:body onload="#{usuarioController.loadUsuario()}">
         <div class="page-max-1200">
             <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" columnClasses="ui-grid-col-12" layout="grid">
                 <p:outputLabel value="USUÁRIO" style="font-weight: bold"/>
@@ -26,24 +26,34 @@
                     <h:column>
                         <p:menu>
                             <p:submenu label="Ações">
-                                <p:menuitem id="btn_salvar_alterar" value="#{usuarioController.usuario.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{usuarioController.salvar()}" icon="fa fa-fw fa-save" update="@form">
+                                <p:menuitem id="btn_salvar_alterar" value="#{usuarioController.usuario.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{usuarioController.salvar()}" icon="fa fa-fw fa-save" update="@form" disabled="#{(!permissaoController.temPermissao('salvar_usuario') and usuarioController.usuario.id eq -1) or (!permissaoController.temPermissao('alterar_usuario') and usuarioController.usuario.id ne -1)}">
                                     <p:confirm header="#{usuarioController.usuario.id eq -1 ? 'Salvar' : 'Alterar'} Usuário" message="#{usuarioController.usuario.id eq -1 ? 'Salvar' : 'Alterar'} este Usuário?" icon="ui-icon-alert" />
                                 </p:menuitem>
                                 <p:menuitem value="Novo" actionListener="#{usuarioController.novo()}" icon="fa fa-fw fa-plus" update="@form" />
-                                <p:menuitem value="Excluir" action="#{usuarioController.excluir()}" update="@form" icon="fa fa-fw fa-close" disabled="#{usuarioController.usuario.id eq -1}">
+                                <p:menuitem value="Excluir" action="#{usuarioController.excluir()}" update="@form" icon="fa fa-fw fa-close" disabled="#{!permissaoController.temPermissao('excluir_usuario') or usuarioController.usuario.id eq -1}">
                                     <p:confirm header="Excluir Usuário" message="Deseja realmente excluir este usuário?" icon="ui-icon-alert" />
                                 </p:menuitem>
-                                <p:menuitem value="Lista de Usuários" action="lista_usuario" icon="fa fa-fw fa-list-ol" />
+                                <p:menuitem value="Lista de Usuários" action="lista_usuario" icon="fa fa-fw fa-list-ol" disabled="#{!permissaoController.temPermissao('lista_usuario')}"/>
                             </p:submenu>
                         </p:menu>
                     </h:column>
 
                     <h:column>
-                        <h:panelGrid style="width: 100%">
-                            <p:outputLabel value="Nome" style="font-weight: bold"/>
-                            <p:inputText value="#{usuarioController.usuario.nome}">
-                                <p:ajax update="@this" global="false"/>
-                            </p:inputText>
+                        <h:panelGrid columns="2" style="width: 100%">
+                            <h:column>
+                                <p:outputLabel value="Nome" style="font-weight: bold"/>
+                                <p:inputText value="#{usuarioController.usuario.nome}">
+                                    <p:ajax update="@this" global="false"/>
+                                </p:inputText>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Grupo" style="font-weight: bold"/><br />
+                                <p:selectOneMenu value="#{usuarioController.indexListaGrupo}" style=" width: 180px">
+                                    <p:ajax event="change" update="@this" global="false"/>
+                                    <f:selectItems value="#{usuarioController.listaGrupo}" />
+                                </p:selectOneMenu>
+                            </h:column>
                         </h:panelGrid>
 
                         <h:panelGrid style="width: 100%">
@@ -70,15 +80,15 @@
                         </h:panelGrid>
 
                         <h:panelGrid rendered="#{usuarioController.usuario.id ne -1}">
-                            <p:commandButton value="Alterar Senha" onclick="PF('dlg_alterar_senha').show()"/>
+                            <p:commandButton value="Alterar Senha" onclick="PF('dlg_alterar_senha').show()" disabled="#{!permissaoController.temPermissao('alterar_senha_usuario')}"/>
                         </h:panelGrid>
                     </h:column>
                 </p:panelGrid>
             </div>
 
             <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" style="background: red; border-color: red"/>
-                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" style="background: red; border-color: red"/>
             </p:confirmDialog>
 
             <p:dialog header="Alterar Senha" widgetVar="dlg_alterar_senha" modal="true" style="width: 400px;" resizable="false">

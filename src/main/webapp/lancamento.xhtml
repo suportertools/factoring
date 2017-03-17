@@ -5,15 +5,317 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
-    
+
     <f:subview id="header">
         <ui:include src="template/header.xhtml"/>
+        <ui:include src="template/loading.xhtml"/>
     </f:subview>
-    
-    <h:body>
-        <p:outputLabel value="LANÇAMENTO" />
+
+    <h:body onload="#{lancamentoController.loadPagina()}">
+        <div class="page-max-1200">
+            <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" columnClasses="ui-grid-col-12" layout="grid">
+                <p:outputLabel value="LANÇAMENTO" style="font-weight: bold"/>
+                <hr />
+            </p:panelGrid>
+        </div>
+
+        <h:form id="form_lancamento">
+            <div class="ui-fluid page-max-1200">
+                <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" layout="grid" style="width: 100%">
+                    <p:commandButton value="Selecionar Pessoa" icon="fa fa-fw fa-search" style="width: 40%; float: left" action="#{pesquisaPessoaFind.pesquisar()}" rendered="#{lancamentoController.pesquisaLancamento.pessoa.id eq -1}"/>
+                    <h:panelGrid columns="2" rendered="#{lancamentoController.pesquisaLancamento.pessoa.id ne -1}" style="width: 700px; background: #c8e4fb; padding: 4px">
+                        <p:outputLabel value="#{lancamentoController.pesquisaLancamento.pessoa.nome} - #{lancamentoController.pesquisaLancamento.pessoa.documento}"/>
+                        <p:commandLink action="#{lancamentoController.pesquisaLancamento.novo()}" update="@form">
+                            <span class="fa fa-fw fa-close"></span>
+                            <i>Remover</i>
+                        </p:commandLink>
+                    </h:panelGrid>
+
+                    <p:commandButton value="Novo Lançamento" action="#{lancamentoController.novoLancamento()}" icon="fa fa-fw fa-plus-square-o" style="width: 40%; float: right" disabled="#{lancamentoController.pesquisaLancamento.pessoa.id eq -1}" oncomplete="PF('dlg_lancar_movimento').show()" update="form_lancar_movimento"/>
+                </p:panelGrid>
+
+                <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-12" layout="grid">
+                    <p:panel>
+                        <h:panelGrid columns="3">
+                            <h:column>
+                                <p:outputLabel value="Tipo de Vencimento" /><br />
+                                <p:selectOneMenu value="#{lancamentoController.pesquisaLancamento.tipoVencimento}" style="width: 230px">
+                                    <p:ajax event="change" update="@form" listener="#{lancamentoController.pesquisaLancamento.loadListaMovimento()}" />
+                                    <f:selectItem itemValue="a_vencer" itemLabel="A VENCER" />
+                                    <f:selectItem itemValue="vencendo_hoje" itemLabel="VENCENDO HOJE" />
+                                    <f:selectItem itemValue="vencido_a_6_meses" itemLabel="VENCIDO A 6 MESES" />
+                                    <f:selectItem itemValue="vencido_todos" itemLabel="TODOS VENCIDOS" />
+                                </p:selectOneMenu>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Tipo de Documento" /><br />
+                                <p:selectOneMenu value="#{lancamentoController.pesquisaLancamento.indexListaTipoDocumento}" style=" width: 180px">
+                                    <p:ajax event="change" update="@form" listener="#{lancamentoController.pesquisaLancamento.loadListaMovimento()}" />
+                                    <f:selectItems value="#{lancamentoController.pesquisaLancamento.listaTipoDocumento}" />
+                                </p:selectOneMenu>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Ordem" /><br />
+                                <p:selectOneMenu value="#{lancamentoController.pesquisaLancamento.ordem}" style="width: 230px">
+                                    <p:ajax event="change" update="@form" listener="#{lancamentoController.pesquisaLancamento.loadListaMovimento()}" />
+                                    <f:selectItem itemValue="lancamento" itemLabel="Lançamento" />
+                                    <f:selectItem itemValue="vencimento" itemLabel="Vencimento" />
+                                </p:selectOneMenu>
+                            </h:column>
+                        </h:panelGrid>
+                    </p:panel>
+
+                    <p:dataTable id="tbl_lista_lancamento" value="#{lancamentoController.pesquisaLancamento.listaMovimento}" var="linha_movimento" emptyMessage="Nenhum Lançamento Encontrado.">
+                        <p:column style="width:16px">
+                            <p:rowToggler />
+                        </p:column>
+
+                        <p:column headerText="#" style="width: 60px; text-align: center">
+                            <p:commandLink value="#{linha_movimento.id}" action="#{lancamentoController.editar(linha_movimento)}" oncomplete="PF('dlg_lancar_movimento').show()" update="form_lancar_movimento"/>
+                        </p:column>
+
+                        <p:column headerText="Lançamento" style="width: 100px; text-align: center">
+                            <p:commandLink value="#{linha_movimento.lancamentoString}" action="#{lancamentoController.editar(linha_movimento)}" oncomplete="PF('dlg_lancar_movimento').show()" update="form_lancar_movimento"/>
+                        </p:column>
+
+                        <p:column headerText="Tipo" style="width: 120px">
+                            <p:commandLink value="#{linha_movimento.tipoDocumento.tipoDocumento}" action="#{lancamentoController.editar(linha_movimento)}" oncomplete="PF('dlg_lancar_movimento').show()" update="form_lancar_movimento"/>
+                        </p:column>
+
+                        <p:column headerText="Documento" style="width: 120px; text-align: center">
+                            <p:commandLink value="#{linha_movimento.documento}" action="#{lancamentoController.editar(linha_movimento)}" oncomplete="PF('dlg_lancar_movimento').show()" update="form_lancar_movimento"/>
+                        </p:column>
+
+                        <p:column headerText="Banco">
+                            <p:commandLink value="#{linha_movimento.banco.banco}" action="#{lancamentoController.editar(linha_movimento)}" oncomplete="PF('dlg_lancar_movimento').show()" update="form_lancar_movimento"/>
+                        </p:column>
+
+                        <p:column headerText="Agência" style="width: 80px; text-align: center">
+                            <p:commandLink value="#{linha_movimento.agencia}" action="#{lancamentoController.editar(linha_movimento)}" oncomplete="PF('dlg_lancar_movimento').show()" update="form_lancar_movimento"/>
+                        </p:column>
+
+                        <p:column headerText="Conta" style="width: 80px; text-align: center">
+                            <p:commandLink value="#{linha_movimento.conta}" action="#{lancamentoController.editar(linha_movimento)}" oncomplete="PF('dlg_lancar_movimento').show()" update="form_lancar_movimento"/>
+                        </p:column>
+
+                        <p:column headerText="Vencimento" style="width: 100px; text-align: center">
+                            <p:commandLink value="#{linha_movimento.vencimentoString}" action="#{lancamentoController.editar(linha_movimento)}" oncomplete="PF('dlg_lancar_movimento').show()" update="form_lancar_movimento"/>
+                        </p:column>
+
+                        <p:column headerText="Valor" style="width: 120px; text-align: right">
+                            <p:commandLink value="#{linha_movimento.valorString}" action="#{lancamentoController.editar(linha_movimento)}" oncomplete="PF('dlg_lancar_movimento').show()" update="form_lancar_movimento"/>
+                        </p:column>
+
+                        <p:rowExpansion>
+                            <p:panelGrid columns="3">
+                                <h:column rendered="#{linha_movimento.praca ne null}">
+                                    <p:outputLabel value="Praça" style="font-weight: bold"/><br />
+                                    <p:outputLabel value="#{linha_movimento.praca.cidade} - #{linha_movimento.praca.uf}" />
+                                </h:column>
+                                <h:column rendered="#{linha_movimento.praca ne null}">
+                                    <p:outputLabel value="Emitente" style="font-weight: bold"/><br />
+                                    <p:outputLabel value="#{linha_movimento.emitente.nome}" />
+                                </h:column>
+                                <h:column>
+                                    <p:outputLabel value="Vencimento Original" style="font-weight: bold"/><br />
+                                    <p:outputLabel value="#{linha_movimento.vencimentoOriginalString}" />
+                                </h:column>
+                                <h:column rendered="#{linha_movimento.observacao ne ''}">
+                                    <p:outputLabel value="Observação" style="font-weight: bold"/><br />
+                                    <p:outputLabel value="#{linha_movimento.observacao}" />
+                                </h:column>
+                            </p:panelGrid>
+                        </p:rowExpansion>
+                    </p:dataTable>
+
+                    <p:separator />
+
+                    <h:panelGrid columns="2">
+                        <h:column>
+                            <p:outputLabel value="Quantidade"/><br />
+                            <p:inputText disabled="true" value="#{lancamentoController.pesquisaLancamento.listaMovimento.size()}" style="opacity: .8; font-weight: bold"/>
+                        </h:column>
+
+                        <h:column>
+                            <p:outputLabel value="Valor"/><br />
+                            <p:inputText disabled="true" value="#{lancamentoController.pesquisaLancamento.somaValoresString}" style="text-align: right; opacity: .8; font-weight: bold"/>
+                        </h:column>
+                    </h:panelGrid>
+                </p:panelGrid>
+            </div>
+        </h:form>
+
+        <ui:include src="template/pesquisaPessoa.xhtml" />
+
+        <h:form id="form_lancar_movimento">
+            <p:dialog widgetVar="dlg_lancar_movimento" header="Lançar Movimento" modal="true" width="800" resizable="false" responsive="true" position="top">
+                <h:panelGroup id="panel_lancar_movimento" styleClass="ui-fluid" layout="block">
+                    <p:focus for="input_documento" />
+                    <p:messages closable="true" showDetail="true" />
+
+                    <h:panelGrid columns="3">
+                        <h:column>
+                            <p:outputLabel value="Lançamento" style="font-weight: bold"/><br />
+                            <p:inputMask value="#{lancamentoController.movimento.lancamentoString}" mask="99/99/9999" style="width: 140px; opacity: .8; text-align: center" disabled="true"/>
+                        </h:column>
+
+                        <h:column>
+                            <p:outputLabel value="Tipo Documento" style="font-weight: bold;"/><br />
+                            <p:selectOneMenu value="#{lancamentoController.indexListaTipoDocumento}" style=" width: 180px">
+                                <p:ajax event="change" update="@this panel_lancar_movimento"  global="false" />
+                                <f:selectItems value="#{lancamentoController.listaTipoDocumento}" />
+                            </p:selectOneMenu>
+                        </h:column>
+
+                        <h:column>
+                            <p:outputLabel value="Número do Documento" style="font-weight: bold;"/><br />
+                            <p:inputText id="input_documento" value="#{lancamentoController.movimento.documento}" />
+                        </h:column>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="1" style="width: 100%">
+                        <h:column>
+                            <p:outputLabel value="Para" style="font-weight: bold"/><br />
+                            <p:outputLabel value="#{lancamentoController.movimento.pessoa.nome} - #{lancamentoController.movimento.pessoa.documento}" style="font-size: 14pt"/>
+                        </h:column>
+                    </h:panelGrid>
+
+                    <p:separator />
+
+                    <h:panelGrid rendered="#{lancamentoController.indexListaTipoDocumento eq 0}">
+                        <h:panelGrid columns="1" style="width: 100%">
+                            <h:column>
+                                <p:outputLabel value="Banco" /><br />
+                                <p:selectOneMenu value="#{lancamentoController.indexListaBanco}" filter="true" filterMatchMode="contains">
+                                    <p:ajax event="change" update="@this"  global="false"/>
+                                    <f:selectItems value="#{lancamentoController.listaBanco}" />
+                                </p:selectOneMenu>
+                            </h:column>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="4">
+                            <h:column>
+                                <p:outputLabel value="Agência" /><br />
+                                <p:inputText value="#{lancamentoController.movimento.agencia}" />
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Conta" /><br />
+                                <p:inputText value="#{lancamentoController.movimento.conta}" />
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="UF" /><br />
+                                <p:selectOneMenu value="#{lancamentoController.indexListaUF}" style=" width: 80px">
+                                    <p:ajax event="change" update="@this select_praca" listener="#{lancamentoController.loadListaCidade()}" global="false"/>
+                                    <f:selectItems value="#{lancamentoController.listaUF}" />
+                                </p:selectOneMenu>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Praça" /><br />
+                                <p:selectOneMenu id="select_praca" value="#{lancamentoController.indexListaCidade}" style=" width: 300px" filter="true" filterMatchMode="startsWith">
+                                    <p:ajax event="change" update="@this"  global="false"/>
+                                    <f:selectItems value="#{lancamentoController.listaCidade}" />
+                                </p:selectOneMenu>
+                            </h:column> 
+                        </h:panelGrid>
+
+
+                        <h:panelGrid columns="1">
+                            <p:outputLabel value="Emitente" style="font-weight: bold"/>
+                            <p:separator />
+                        </h:panelGrid>
+
+                        <h:panelGrid id="panel_pesquisa_emitente" columns="3">
+                            <h:column>
+                                <p:outputLabel value="Tipo Documento" /><br />
+                                <p:selectOneMenu value="#{lancamentoController.indexListaTipoDocumentoEmitente}" style="width: 180px">
+                                    <p:ajax event="change" update="@this input_mask_documento" global="false" listener="#{lancamentoController.movimento.emitente.setDocumento('')}"/>
+                                    <f:selectItems value="#{lancamentoController.listaTipoDocumentoEmitente}" />
+                                </p:selectOneMenu>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Documento"/><br />
+                                <p:inputMask id="input_mask_documento" value="#{lancamentoController.movimento.emitente.documento}" mask="#{lancamentoController.maskDocumentoEmitente}" style="text-align: center">
+                                    <p:ajax event="change" listener="#{lancamentoController.pesquisaEmitente()}" update="panel_pesquisa_emitente panel_detalhes_emitente"/>
+                                </p:inputMask>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Nome"/><br />
+                                <p:inputText value="#{lancamentoController.movimento.emitente.nome}" style="width: 400px"/>
+                            </h:column>
+                        </h:panelGrid>
+
+                        <div class="ui-fluid">
+                            <h:panelGrid id="panel_detalhes_emitente" columns="3">
+                                <ui:repeat value="#{lancamentoController.listaDetalheMovimentosEmitente}" var="linha_detalhe_emitente" >
+                                    <p:panel style="float: left">
+                                        <p:outputLabel value="#{linha_detalhe_emitente.status}" style="font-weight: bold"/><br />
+                                        <p:outputLabel value="Quantidade: #{linha_detalhe_emitente.quantidade}" /><br />
+                                        <p:outputLabel value="Valor: #{linha_detalhe_emitente.valor_totalString}" />
+                                    </p:panel>
+                                </ui:repeat>
+                            </h:panelGrid>
+                        </div>
+                        <p:separator />
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="3">
+                        <h:column>
+                            <p:outputLabel value="Vencimento" style="font-weight: bold"/><br />
+                            <p:inputMask value="#{lancamentoController.movimento.vencimentoString}" mask="99/99/9999" style="width: 120px; text-align: center">
+                                <p:ajax event="change" listener="#{lancamentoController.atualizaVencimentoOriginal()}" update="input_vencimento_original" global="false"/>
+                            </p:inputMask>
+                        </h:column>
+
+                        <h:column>
+                            <p:outputLabel value="Vencimento Original" style="font-weight: bold"/><br />
+                            <p:inputMask id="input_vencimento_original" value="#{lancamentoController.movimento.vencimentoOriginalString}" disabled="true" style="opacity: .8; width: 150px; text-align: center" mask="99/99/9999"/>
+                        </h:column>
+
+                        <h:column>
+                            <p:outputLabel value="Valor" style="font-weight: bold"/><br />
+                            <p:inputText value="#{lancamentoController.movimento.valorString}" style="text-align: right" onclick="this.value = ''">
+                                <p:ajax event="change" update="@this" global="false"/>
+                            </p:inputText>
+                        </h:column>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="1" style="width: 100%">
+                        <h:column>
+                            <p:outputLabel value="Observação" style="font-weight: bold"/><br />
+                            <p:inputTextarea value="#{lancamentoController.movimento.observacao}" />
+                        </h:column>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="4">
+                        <p:commandButton value="#{lancamentoController.movimento.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{lancamentoController.salvar()}" icon="fa fa-save" update="panel_lancar_movimento form_lancamento">
+                            <p:confirm header="#{lancamentoController.movimento.id eq -1 ? 'Salvar' : 'Alterar'} este Lançamento" message="#{lancamentoController.movimento.id eq -1 ? 'Confirma a geração' : 'Confirma a alteração'} deste lançamento?" icon="ui-icon-alert" />
+                        </p:commandButton>
+
+                        <p:commandButton value="Novo" action="#{lancamentoController.novoLancamento()}" icon="fa fa-plus" update="panel_lancar_movimento" />
+
+                        <p:commandButton value="Excluir" action="#{lancamentoController.excluir()}" icon="fa fa-trash" update="panel_lancar_movimento form_lancamento" disabled="#{lancamentoController.movimento.id eq -1}">
+                            <p:confirm header="Excluir este Lançamento" message="Deseja excluir deste lançamento?" icon="ui-icon-alert" />
+                        </p:commandButton>
+
+                        <p:commandButton value="#{lancamentoController.movimento.id eq -1 ? 'Cancelar' : 'Fechar'}" icon="fa fa-close" style="background: red; border-color: red" onclick="PF('dlg_lancar_movimento').hide()"/>
+                    </h:panelGrid>
+                </h:panelGroup>
+            </p:dialog>
+
+            <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" style="background: red; border-color: red" />
+            </p:confirmDialog>
+        </h:form>
     </h:body>
-    
+
     <f:subview id="footer">
         <ui:include src="template/footer.xhtml"/>
     </f:subview>

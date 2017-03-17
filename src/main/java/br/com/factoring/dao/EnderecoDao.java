@@ -66,4 +66,41 @@ public class EnderecoDao extends DB {
         }
         return new ArrayList();
     }
+
+    public List<String> listaUF() {
+        Query query = getEntityManager().createNativeQuery(
+                " SELECT c.ds_uf \n "
+                + " FROM pes_cidade c \n "
+                + "GROUP BY c.ds_uf \n "
+                + "ORDER BY c.ds_uf"
+        );
+        List<String> result = query.getResultList();
+        List<String> retorno = new ArrayList();
+        
+        for (int i = 0; i < result.size(); i++) {
+            retorno.add(result.get(i));
+        }
+        try {
+            return retorno;
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+
+    public List<Cidade> listaCidade(String uf) {
+        Query query = getEntityManager().createNativeQuery(
+                " SELECT c.* \n "
+                + " FROM pes_cidade c \n "
+                + "WHERE c.ds_uf = '" + uf + "' \n "
+                + "ORDER BY c.ds_cidade", Cidade.class
+        );
+
+        try {
+            return query.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
 }

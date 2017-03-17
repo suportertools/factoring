@@ -9,6 +9,7 @@ import br.com.factoring.connections.Dao;
 import br.com.factoring.dao.EnderecoDao;
 import br.com.factoring.dao.FisicaDao;
 import br.com.factoring.dao.JuridicaDao;
+import br.com.factoring.dao.PessoaDao;
 import br.com.factoring.model.Endereco;
 import br.com.factoring.model.Fisica;
 import br.com.factoring.model.Juridica;
@@ -17,6 +18,8 @@ import br.com.factoring.model.TipoEndereco;
 import br.com.factoring.utils.CEPService;
 import br.com.factoring.utils.MensagemFlash;
 import br.com.factoring.utils.PF;
+import br.com.factoring.utils.Redirectx;
+import br.com.factoring.utils.ValidaDocumento;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -40,9 +43,22 @@ public class FisicaController {
     private PesquisaFisica pesquisaFisica = new PesquisaFisica();
     private PesquisaEndereco pesquisaEndereco = new PesquisaEndereco();
 
+    public void loadFisica() {
+        if (!FacesContext.getCurrentInstance().isPostback()) {
+
+            if (!new PermissaoController().temPermissao("cadastro_fisica")) {
+                Redirectx.go("dashboard");
+            }
+        }
+    }
+
     public void loadPagina() {
         if (!FacesContext.getCurrentInstance().isPostback()) {
             pesquisaFisica.loadListaFisica();
+            
+            if (!new PermissaoController().temPermissao("lista_fisica")) {
+                Redirectx.go("dashboard");
+            }
         }
     }
 
@@ -77,7 +93,7 @@ public class FisicaController {
     }
 
     public void excluirEndereco(Endereco e) {
-        if (e != null){
+        if (e != null) {
             pesquisaEndereco.endereco = e;
         }
 
@@ -116,11 +132,21 @@ public class FisicaController {
             return;
         }
 
-        dao.begin();
+        if (!ValidaDocumento.isValidoCPF(fisica.getPessoa().getDocumento())) {
+            MensagemFlash.fatal("Atenção", "DIGITE CPF VÁLIDO!");
+            return;
+        }
 
         fisica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 1));
 
+        dao.begin();
         if (fisica.getId() == -1) {
+            if (new PessoaDao().pesquisaPessoaDocumento(null, fisica.getPessoa().getDocumento()) != null) {
+                dao.rollback();
+                MensagemFlash.fatal("Atenção", "ESTE DOCUMENTO JÁ ESTA CADASTRADO!");
+                return;
+            }
+
             if (!dao.save(fisica.getPessoa())) {
                 dao.rollback();
                 MensagemFlash.fatal("Atenção", "ERRO AO SALVAR PESSOA!");
@@ -133,6 +159,12 @@ public class FisicaController {
                 return;
             }
         } else {
+            if (new PessoaDao().pesquisaPessoaDocumento(fisica.getPessoa().getId(), fisica.getPessoa().getDocumento()) != null) {
+                dao.rollback();
+                MensagemFlash.fatal("Atenção", "ESTE DOCUMENTO JÁ ESTA CADASTRADO!");
+                return;
+            }
+
             if (!dao.update(fisica.getPessoa())) {
                 dao.rollback();
                 MensagemFlash.fatal("Atenção", "ERRO AO ATUALIZAR PESSOA!");
@@ -198,6 +230,7 @@ public class FisicaController {
 
     public String paginaCadastrarFisica() {
         fisica = new Fisica();
+        loadListaEndereco();
         return "fisica";
     }
 
@@ -356,7 +389,7 @@ public class FisicaController {
             this.listaEndereco = new ArrayList();
             this.indexTipoEndereco = 0;
             this.listaTipoEndereco = new ArrayList();
-            
+
             loadListaTipoEndereco();
             loadListaEndereco();
         }

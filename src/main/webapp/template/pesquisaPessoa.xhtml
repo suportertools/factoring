@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:form id="form_pesquisa_pessoa">
+        <p:defaultCommand target="btn_pesquisar_pessoa" />
+        <p:focus context="panel_pesquisar_pessoa" />
+        
+        <p:dialog widgetVar="dlg_pesquisar_pessoa" header="Pesquisar uma Pessoa" modal="true" width="650" resizable="false" responsive="true" position="top">
+            <div class="ui-fluid">
+                <p:panelGrid id="panel_pesquisar_pessoa" columns="2" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-9, ui-grid-col-3" layout="grid">
+                    <h:column>
+                        <p:inputText value="#{pesquisaPessoaFind.nome}" placeholder="Nome da Pessoa"/>
+                    </h:column>
+                    <h:column>
+                        <p:commandButton id="btn_pesquisar_pessoa" value="Pesquisar" action="#{pesquisaPessoaFind.loadListaPessoa()}" update="tbl_lista_pessoa" icon="fa fa-search"/>
+                    </h:column>
+                </p:panelGrid>
+
+                <p:dataTable id="tbl_lista_pessoa" value="#{pesquisaPessoaFind.listaPessoa}" var="linha_pessoa" emptyMessage="Nenhuma Pessoa Encontrada.">
+                    <p:column headerText="#" style="width: 60px; text-align: center">
+                        <p:outputLabel value="#{linha_pessoa.id}" />
+                    </p:column>
+
+                    <p:column headerText="Nome" >
+                        <p:commandLink value="#{linha_pessoa.nome}" action="#{pesquisaPessoaFind.selecionar(linha_pessoa)}" onclick="PF('dlg_pesquisar_pessoa').hide()" ajax="false" />
+                    </p:column>
+
+                    <p:column headerText="Documento" style="width: 150px">
+                        <p:commandLink value="#{linha_pessoa.documento}" action="#{pesquisaPessoaFind.selecionar(linha_pessoa)}" onclick="PF('dlg_pesquisar_pessoa').hide()" ajax="false" />
+                    </p:column>
+                </p:dataTable>
+            </div>
+        </p:dialog>
+    </h:form>
+</html>

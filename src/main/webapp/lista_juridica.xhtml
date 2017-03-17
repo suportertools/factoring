@@ -24,7 +24,7 @@
                         <p:panelGrid styleClass="ui-panelgrid-blank" columns="3" columnClasses="ui-grid-col-7, ui-grid-col-2, ui-grid-col-3" layout="grid">
                             <p:inputText value="#{juridicaController.pesquisaJuridica.nome}" placeholder="Nome da Pessoa Jurídica"/>
                             <p:commandButton id="btn_pesquisar_juridica" value="Pesquisar" action="#{juridicaController.pesquisaJuridica.loadListaJuridica()}" update="form_lista_juridica"/>
-                            <p:commandButton value="Cadastrar Pessoa Jurídica" action="#{juridicaController.paginaCadastrarJuridica()}" />
+                            <p:commandButton value="Cadastrar Pessoa Jurídica" action="#{juridicaController.paginaCadastrarJuridica()}" disabled="#{!permissaoController.temPermissao('cadastro_juridica')}"/>
                         </p:panelGrid>
                     </div>
                 </h:form>
@@ -37,20 +37,20 @@
                             </p:column>
 
                             <p:column headerText="Nome">
-                                <p:commandLink value="#{linha_juridica.pessoa.nome}" action="#{juridicaController.editar(linha_juridica)}"/>
+                                <p:commandLink value="#{linha_juridica.pessoa.nome}" action="#{juridicaController.editar(linha_juridica)}" disabled="#{!permissaoController.temPermissao('cadastro_juridica')}"/>
                             </p:column>
 
                             <p:column headerText="CNPJ" style="width: 150px; text-align: center">
-                                <p:commandLink value="#{linha_juridica.pessoa.documento}" action="#{juridicaController.editar(linha_juridica)}" />
+                                <p:commandLink value="#{linha_juridica.pessoa.documento}" action="#{juridicaController.editar(linha_juridica)}" disabled="#{!permissaoController.temPermissao('cadastro_juridica')}"/>
                             </p:column>
 
 
                             <p:column headerText="Inscrição Estadual" style="width: 90px; text-align: center">
-                                <p:commandLink value="#{linha_juridica.inscricaoEstadual}" action="#{juridicaController.editar(linha_juridica)}" />
+                                <p:commandLink value="#{linha_juridica.inscricaoEstadual}" action="#{juridicaController.editar(linha_juridica)}" disabled="#{!permissaoController.temPermissao('cadastro_juridica')}"/>
                             </p:column>
 
                             <p:column headerText="Cadastro" style="width: 90px; text-align: center">
-                                <p:commandLink value="#{linha_juridica.pessoa.cadastroString}" action="#{juridicaController.editar(linha_juridica)}" />
+                                <p:commandLink value="#{linha_juridica.pessoa.cadastroString}" action="#{juridicaController.editar(linha_juridica)}" disabled="#{!permissaoController.temPermissao('cadastro_juridica')}"/>
                             </p:column>
                         </p:dataTable>
                     </h:panelGrid>

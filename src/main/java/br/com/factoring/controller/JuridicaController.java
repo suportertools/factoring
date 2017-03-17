@@ -8,6 +8,7 @@ package br.com.factoring.controller;
 import br.com.factoring.connections.Dao;
 import br.com.factoring.dao.EnderecoDao;
 import br.com.factoring.dao.JuridicaDao;
+import br.com.factoring.dao.PessoaDao;
 import br.com.factoring.model.Endereco;
 import br.com.factoring.model.Juridica;
 import br.com.factoring.model.TipoDocumento;
@@ -15,6 +16,8 @@ import br.com.factoring.model.TipoEndereco;
 import br.com.factoring.utils.CEPService;
 import br.com.factoring.utils.MensagemFlash;
 import br.com.factoring.utils.PF;
+import br.com.factoring.utils.Redirectx;
+import br.com.factoring.utils.ValidaDocumento;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -37,9 +40,21 @@ public class JuridicaController {
     private PesquisaJuridica pesquisaJuridica = new PesquisaJuridica();
     private PesquisaEndereco pesquisaEndereco = new PesquisaEndereco();
 
+    public void loadJuridica() {
+        if (!FacesContext.getCurrentInstance().isPostback()) {
+            if (!new PermissaoController().temPermissao("cadastro_juridica")) {
+                Redirectx.go("dashboard");
+            }
+        }
+    }
+    
     public void loadPagina() {
         if (!FacesContext.getCurrentInstance().isPostback()) {
             pesquisaJuridica.loadListaJuridica();
+
+            if (!new PermissaoController().temPermissao("lista_juridica")) {
+                Redirectx.go("dashboard");
+            }
         }
     }
 
@@ -57,11 +72,21 @@ public class JuridicaController {
             return;
         }
 
-        dao.begin();
+        if (!ValidaDocumento.isValidoCNPJ(juridica.getPessoa().getDocumento())) {
+            MensagemFlash.fatal("Atenção", "DIGITE CNPJ VÁLIDO!");
+            return;
+        }
 
         juridica.getPessoa().setTipoDocumento((TipoDocumento) dao.find(new TipoDocumento(), 2));
 
+        dao.begin();
         if (juridica.getId() == -1) {
+            if (new PessoaDao().pesquisaPessoaDocumento(null, juridica.getPessoa().getDocumento()) != null) {
+                dao.rollback();
+                MensagemFlash.fatal("Atenção", "ESTE DOCUMENTO JÁ ESTA CADASTRADO!");
+                return;
+            }
+
             if (!dao.save(juridica.getPessoa())) {
                 dao.rollback();
                 MensagemFlash.fatal("Atenção", "ERRO AO SALVAR PESSOA!");
@@ -74,6 +99,12 @@ public class JuridicaController {
                 return;
             }
         } else {
+            if (new PessoaDao().pesquisaPessoaDocumento(juridica.getPessoa().getId(), juridica.getPessoa().getDocumento()) != null) {
+                dao.rollback();
+                MensagemFlash.fatal("Atenção", "ESTE DOCUMENTO JÁ ESTA CADASTRADO!");
+                return;
+            }
+
             if (!dao.update(juridica.getPessoa())) {
                 dao.rollback();
                 MensagemFlash.fatal("Atenção", "ERRO AO ATUALIZAR PESSOA!");

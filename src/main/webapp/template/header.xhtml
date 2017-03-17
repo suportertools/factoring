@@ -31,18 +31,19 @@
                     <c:choose>
                         <c:when test="#{usuarioController.usuarioSessao.id ne -1}">
                             <p:submenu label="Cadastro" icon="fa fa-fw fa-navicon">
-                                <p:menuitem value="Física" action="lista_fisica"/>
-                                <p:menuitem value="Jurídica" action="lista_juridica"/>
+                                <p:menuitem value="Física" action="lista_fisica" disabled="#{!permissaoController.temPermissao('lista_fisica')}"/>
+                                <p:menuitem value="Jurídica" action="lista_juridica" disabled="#{!permissaoController.temPermissao('lista_juridica')}"/>
                                 <p:separator />
-                                <p:menuitem value="Usuários" action="lista_usuario"/>
+                                <p:menuitem value="Usuários" action="lista_usuario" disabled="#{!permissaoController.temPermissao('lista_usuario')}"/>
+                                <p:menuitem value="Grupo de Usuários" action="grupo" disabled="#{!permissaoController.temPermissao('cadastro_grupo')}"/>
                             </p:submenu>
 
                             <p:submenu label="Movimento" icon="fa fa-fw fa-usd">
-                                <p:menuitem value="Lançamentos" action="#{lancamentoController.paginaLancamento()}"/>
+                                <p:menuitem value="Lançamentos" action="#{lancamentoController.paginaLancamento()}" disabled="#{!permissaoController.temPermissao('lancamento')}"/>
                             </p:submenu>
 
                             <p:submenu label="Relatórios" icon="fa fa-fw fa-file-text-o">
-                                <p:menuitem value="Financeiro" action="#{relatorioFinanceiroController.paginaRelatorioFinanceiro()}"/>
+                                <p:menuitem value="Financeiro" action="#{relatorioFinanceiroController.paginaRelatorioFinanceiro()}" disabled="#{!permissaoController.temPermissao('relatorio_financeiro')}"/>
                             </p:submenu>
                         </c:when>
                         <c:otherwise>

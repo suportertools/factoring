@@ -6,9 +6,12 @@
 package br.com.factoring.controller;
 
 import br.com.factoring.connections.Dao;
+import br.com.factoring.dao.PermissaoDao;
 import br.com.factoring.dao.UsuarioDao;
+import br.com.factoring.model.Grupo;
 import br.com.factoring.model.Usuario;
 import br.com.factoring.utils.MensagemFlash;
+import br.com.factoring.utils.Redirectx;
 import br.com.factoring.utils.Sessao;
 import java.io.IOException;
 import java.io.Serializable;
@@ -17,6 +20,7 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
+import javax.faces.model.SelectItem;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -37,13 +41,50 @@ public class UsuarioController implements Serializable {
     private String novaSenha = "";
     private String confirmaNovaSenha = "";
 
+    private List<SelectItem> listaGrupo = new ArrayList();
+    private Integer indexListaGrupo = 0;
+
+    public UsuarioController() {
+        loadListaGrupo();
+    }
+
+    public void loadUsuario() {
+        if (!FacesContext.getCurrentInstance().isPostback()) {
+            if (!new PermissaoController().temPermissao("cadastro_usuario")) {
+                Redirectx.go("dashboard");
+            }
+        }
+    }
+
     public void loadPagina() {
         if (!FacesContext.getCurrentInstance().isPostback()) {
             loadListaUsuario();
+            
+            if (!new PermissaoController().temPermissao("lista_usuario")) {
+                Redirectx.go("dashboard");
+            }
+        }
+    }
+
+    public final void loadListaGrupo() {
+        listaGrupo.clear();
+        List<Grupo> result = new PermissaoDao().listaGrupo();
+
+        for (int i = 0; i < result.size(); i++) {
+            listaGrupo.add(new SelectItem(
+                    i,
+                    result.get(i).getNome(),
+                    Integer.toString(result.get(i).getId())
+            ));
         }
     }
 
     public void alterarSenha() {
+        if (novaSenha.isEmpty() || confirmaNovaSenha.isEmpty()){
+            MensagemFlash.fatal("Atenção", "DIGITE AS SENHAS VÁLIDAS!");
+            return;
+        }
+        
         if (!novaSenha.equals(confirmaNovaSenha)) {
             MensagemFlash.fatal("Atenção", "SENHAS NÃO CORRESPONDEM!");
             return;
@@ -70,6 +111,12 @@ public class UsuarioController implements Serializable {
 
     public String editar(Usuario u) {
         usuario = u;
+        
+        for (int i = 0; i < listaGrupo.size(); i++){
+            if (usuario.getGrupo().getId() == Integer.valueOf(listaGrupo.get(i).getDescription())){
+                indexListaGrupo = i;
+            }
+        }
         return "usuario";
     }
 
@@ -130,8 +177,9 @@ public class UsuarioController implements Serializable {
                 return null;
             }
         }
-
         Dao dao = new Dao();
+
+        usuario.setGrupo((Grupo) dao.find(new Grupo(), Integer.valueOf(listaGrupo.get(indexListaGrupo).getDescription())));
 
         dao.begin();
 
@@ -296,5 +344,21 @@ public class UsuarioController implements Serializable {
 
     public void setConfirmaNovaSenha(String confirmaNovaSenha) {
         this.confirmaNovaSenha = confirmaNovaSenha;
+    }
+
+    public List<SelectItem> getListaGrupo() {
+        return listaGrupo;
+    }
+
+    public void setListaGrupo(List<SelectItem> listaGrupo) {
+        this.listaGrupo = listaGrupo;
+    }
+
+    public Integer getIndexListaGrupo() {
+        return indexListaGrupo;
+    }
+
+    public void setIndexListaGrupo(Integer indexListaGrupo) {
+        this.indexListaGrupo = indexListaGrupo;
     }
 }

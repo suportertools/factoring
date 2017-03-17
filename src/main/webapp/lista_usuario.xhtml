@@ -20,7 +20,7 @@
             <h:panelGrid>
                 <h:form>
                     <h:panelGrid style="width: 100%;">
-                        <p:commandButton value="Cadastrar Usuário" action="#{usuarioController.paginaCadastrarUsuario()}" style="float: right"/>
+                        <p:commandButton value="Cadastrar Usuário" action="#{usuarioController.paginaCadastrarUsuario()}" style="float: right" disabled="#{!permissaoController.temPermissao('cadastro_usuario')}"/>
                     </h:panelGrid>
 
                     <h:panelGrid>
@@ -30,11 +30,15 @@
                             </p:column>
 
                             <p:column headerText="Nome">
-                                <p:commandLink value="#{usuario.nome}" action="#{usuarioController.editar(usuario)}"/>
+                                <p:commandLink value="#{usuario.nome}" action="#{usuarioController.editar(usuario)}" disabled="#{!permissaoController.temPermissao('cadastro_usuario')}"/>
                             </p:column>
 
                             <p:column headerText="Login">
-                                <p:commandLink value="#{usuario.login}" action="#{usuarioController.editar(usuario)}" />
+                                <p:commandLink value="#{usuario.login}" action="#{usuarioController.editar(usuario)}" disabled="#{!permissaoController.temPermissao('cadastro_usuario')}"/>
+                            </p:column>
+                            
+                            <p:column headerText="Grupo">
+                                <p:commandLink value="#{usuario.grupo.nome}" action="#{usuarioController.editar(usuario)}" disabled="#{!permissaoController.temPermissao('cadastro_usuario')}"/>
                             </p:column>
                         </p:dataTable>
                     </h:panelGrid>

@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:c="http://java.sun.com/jsp/jstl/core"
+                xmlns:p="http://primefaces.org/ui">
+
+    <f:subview id="header">
+        <ui:include src="template/header.xhtml"/>
+        <ui:include src="template/loading.xhtml"/>
+    </f:subview>
+    <style>
+        .float-left{
+            float: left;
+        }
+    </style>
+
+
+    <h:body onload="#{permissaoController.loadPagina()}">
+        <div class="page-max-1200">
+            <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" columnClasses="ui-grid-col-12" layout="grid">
+                <p:outputLabel value="GRUPO DE USUÁRIOS" style="font-weight: bold"/>
+                <hr />
+            </p:panelGrid>
+        </div>
+
+        <div class="ui-fluid page-max-1200">
+            <h:form id="form_grupo">
+                <p:panelGrid columns="2" style="width: 100%" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-12" layout="grid">
+                    <h:column>
+                        <h:panelGrid columns="2">
+                            <p:selectOneButton value="#{permissaoController.indexListaGrupo}" style="width: 380px">
+                                <p:ajax event="change" listener="#{permissaoController.loadListaPagina()}" update="@this @form form_grupo_pesquisa" />
+                                <f:selectItems value="#{permissaoController.listaGrupo}" />
+                            </p:selectOneButton>
+                            <p:commandButton icon="fa fa-edit" action="#{permissaoController.editarGrupo()}" oncomplete="PF('dlg_novo_grupo').show()" update="form_novo_grupo" disabled="#{!permissaoController.temPermissao('alterar_grupo')}"/>
+                        </h:panelGrid>
+                    </h:column>
+
+                    <h:column>
+                        <br />
+                        <p:commandButton value="Novo Grupo" action="#{permissaoController.cadastrarNovoGrupo()}" icon="fa fa-fw fa-plus-square-o" style="width: 40%; float: right" oncomplete="PF('dlg_novo_grupo').show()" update="form_novo_grupo" disabled="#{permissaoController.temPermissao('salvar_grupo') eq false}"/>
+                    </h:column>
+                </p:panelGrid>
+            </h:form>
+
+            <h:form id="form_grupo_pesquisa">
+                <p:panelGrid columns="1" style="width: 100%" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-12" layout="grid">
+                    <p:separator />
+                    <p:outputLabel value="Pesquisar Permissões" style="font-weight: bold"/>
+                    <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-10, ui-grid-col-2" layout="grid">
+                        <p:inputText value="#{permissaoController.pesquisaPermissao.descricao}" placeholder="DIGITE O ALGUMA PÁGINA OU PERMISSÃO" />
+                        <p:commandButton value="Pesquisar" action="#{permissaoController.loadListaPagina()}" icon="fa fa-search" update="@form"/>
+                    </p:panelGrid>
+                </p:panelGrid>
+
+                <p:panelGrid columns="4" style="width: 100%" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-3, ui-grid-col-3, ui-grid-col-3, ui-grid-col-3">
+                    <c:forEach items="#{permissaoController.listaPagina}" var="linha_pagina">
+                        <p:panel header="#{linha_pagina.pagina.nome}">
+                            <ui:repeat value="#{linha_pagina.listaPermissaoCheck}" var="linha_permissao">
+                                <p:selectBooleanCheckbox value="#{linha_permissao.check}" disabled="#{permissaoController.temPermissao('alterar_permissao_grupo') eq false}" itemLabel="#{linha_permissao.permissao.nome}" style="padding: 5px">
+                                    <p:ajax event="change" listener="#{permissaoController.editarPermissaoPagina(linha_permissao)}" update="@form" global="false"/>
+                                </p:selectBooleanCheckbox>
+                                <br />
+                            </ui:repeat>
+                        </p:panel>
+                    </c:forEach>
+                </p:panelGrid>
+            </h:form>
+
+            <h:form id="form_novo_grupo">
+                <p:dialog widgetVar="dlg_novo_grupo" header="#{permissaoController.novoGrupo.id eq -1 ? 'Criar um novo Grupo de Usuários' : 'Editar Grupo de Usuários'}" modal="true" width="650" resizable="false" responsive="true" position="top">
+                    <h:panelGrid id="panel_novo_grupo" columns="1"  style="width: 100%">
+                        <p:messages showDetail="true" closable="true" />
+
+                        <h:panelGrid columns="1" style="width: 100%">
+                            <h:column>
+                                <p:outputLabel value="Nome do Grupo" /><br />
+                                <p:inputText value="#{permissaoController.novoGrupo.nome}" placeholder="DIGITE O NOME DO GRUPO"/>
+                            </h:column>
+                        </h:panelGrid>
+                    </h:panelGrid>
+
+                    <h:panelGrid columns="3">
+                        <p:commandButton value="#{permissaoController.novoGrupo.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{permissaoController.salvarGrupo()}" icon="fa fa-save" update="panel_novo_grupo form_grupo form_grupo_pesquisa" oncomplete="PF('dlg_novo_grupo').hide()">
+                            <p:confirm header="#{permissaoController.novoGrupo.id eq -1 ? 'Salvar' : 'Alterar'} este Grupo" message="#{permissaoController.novoGrupo.id eq -1 ? 'Deseja Salvar' : 'Deseja Alterar'} este Grupo?" icon="ui-icon-alert" />
+                        </p:commandButton>
+
+                        <p:commandButton value="Excluir" action="#{permissaoController.excluirGrupo()}" icon="fa fa-remove" update="panel_novo_grupo form_grupo form_grupo_pesquisa" oncomplete="PF('dlg_novo_grupo').hide()" disabled="#{!permissaoController.temPermissao('excluir_grupo') or permissaoController.novoGrupo.id eq -1}">
+                            <p:confirm header="Excluir Grupo" message="Deseja excluir este Grupo?" icon="ui-icon-alert" />
+                        </p:commandButton>
+
+                        <p:commandButton value="Fechar" icon="fa fa-close" style="background: red; border-color: red" onclick="PF('dlg_novo_grupo').hide()"/>
+                    </h:panelGrid>
+                </p:dialog>
+
+                <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                    <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                    <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" style="background: red; border-color: red" />
+                </p:confirmDialog>
+            </h:form>
+        </div>
+    </h:body>
+
+    <f:subview id="footer">
+        <ui:include src="template/footer.xhtml"/>
+    </f:subview>
+</ui:composition>
+

@@ -11,7 +11,7 @@
         <ui:include src="template/loading.xhtml"/>
     </f:subview>
 
-    <h:body>
+    <h:body onload="#{fisicaController.loadFisica()}">
         <div class="page-max-1200">
             <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" columnClasses="ui-grid-col-12" layout="grid">
                 <p:outputLabel value="FÍSICA" style="font-weight: bold"/>
@@ -27,14 +27,14 @@
                     <h:column>
                         <p:menu>
                             <p:submenu label="Ações">
-                                <p:menuitem id="btn_salvar_alterar" value="#{fisicaController.fisica.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{fisicaController.salvar()}" icon="fa fa-fw fa-save" update="@form">
+                                <p:menuitem id="btn_salvar_alterar" value="#{fisicaController.fisica.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{fisicaController.salvar()}" icon="fa fa-fw fa-save" update="@form" disabled="#{(!permissaoController.temPermissao('salvar_fisica') and fisicaController.fisica.id eq -1) or (!permissaoController.temPermissao('alterar_fisica') and fisicaController.fisica.id ne -1)}">
                                     <p:confirm header="#{fisicaController.fisica.id eq -1 ? 'Salvar' : 'Alterar'} Pessoa Física" message="#{fisicaController.fisica.id eq -1 ? 'Salvar' : 'Alterar'} esta Pessoa Física?" icon="ui-icon-alert" />
                                 </p:menuitem>
                                 <p:menuitem value="Novo" actionListener="#{fisicaController.novo()}" icon="fa fa-fw fa-plus" update="@form" />
-                                <p:menuitem value="Excluir" action="#{fisicaController.excluir()}" update="@form" icon="fa fa-fw fa-close" disabled="#{fisicaController.fisica.id eq -1}">
+                                <p:menuitem value="Excluir" action="#{fisicaController.excluir()}" update="@form" icon="fa fa-fw fa-close" disabled="#{!permissaoController.temPermissao('excluir_fisica') or fisicaController.fisica.id eq -1}">
                                     <p:confirm header="Excluir Pessoa Física" message="Deseja realmente excluir esta Pessoa Física?" icon="ui-icon-alert" />
                                 </p:menuitem>
-                                <p:menuitem value="Lista de Físicas" action="lista_fisica" icon="fa fa-fw fa-list-ol" />
+                                <p:menuitem value="Lista de Físicas" action="lista_fisica" icon="fa fa-fw fa-list-ol" disabled="#{!permissaoController.temPermissao('lista_fisica')}"/>
                             </p:submenu>
                         </p:menu>
                     </h:column>
@@ -109,8 +109,8 @@
                             <p:outputLabel value="Empresa da Pessoa"/>
                             <h:panelGrid columns="3" style="width: 100%" columnClasses="ui-grid-col-6, ui-grid-col-3, ui-grid-col-3">
                                 <p:inputText value="#{fisicaController.fisica.juridica.pessoa.nome}" disabled="true" style="opacity: .8"/>
-                                <p:commandButton value="Adicionar Empresa" disabled="#{fisicaController.fisica.id eq -1}" actionListener="#{fisicaController.pesquisaEmpresa.novo()}" oncomplete="PF('dlg_adicionar_empresa').show()" update="form_pesquisa_empresa:tbl_lista_empresa form_pesquisa_empresa:panel_adicionar_pesquisa"/>
-                                <p:commandButton value="Remover Empresa" disabled="#{fisicaController.fisica.id eq -1}" action="#{fisicaController.removerEmpresa()}" update="@form" global="false"/>
+                                <p:commandButton value="#{fisicaController.fisica.juridica eq null ? 'Adicionar' : 'Alterar'} Empresa" disabled="#{!permissaoController.temPermissao('adicionar_empresa_fisica') or fisicaController.fisica.id eq -1}" actionListener="#{fisicaController.pesquisaEmpresa.novo()}" oncomplete="PF('dlg_adicionar_empresa').show()" update="form_pesquisa_empresa:tbl_lista_empresa form_pesquisa_empresa:panel_adicionar_pesquisa"/>
+                                <p:commandButton value="Remover Empresa" disabled="#{!permissaoController.temPermissao('remover_empresa_fisica') or fisicaController.fisica.id eq -1 or fisicaController.fisica.juridica eq null}" action="#{fisicaController.removerEmpresa()}" update="@form" global="false"/>
                             </h:panelGrid>
                         </h:panelGrid>
 
@@ -127,43 +127,43 @@
 
                         <p:dataTable id="tbl_lista_pessoa_endereco" value="#{fisicaController.listaEndereco}" var="linha_endereco" emptyMessage="Nenhum Endereço Adicionado.">
                             <p:column headerText="Tipo" style="width: 80px">
-                                <p:commandLink value="#{linha_endereco.tipoEndereco.descricao}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                                <p:commandLink value="#{linha_endereco.tipoEndereco.descricao}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}" />
                             </p:column>
 
                             <p:column headerText="Logr" style="width: 60px; text-align: center">
-                                <p:commandLink value="#{linha_endereco.logradouro}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                                <p:commandLink value="#{linha_endereco.logradouro}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
                             </p:column>
 
                             <p:column headerText="Endereço">
-                                <p:commandLink value="#{linha_endereco.endereco}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                                <p:commandLink value="#{linha_endereco.endereco}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
                             </p:column>
 
                             <p:column headerText="Número" style="width: 80px; text-align: center">
-                                <p:commandLink value="#{linha_endereco.numero}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                                <p:commandLink value="#{linha_endereco.numero}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
                             </p:column>
 
                             <p:column headerText="Bairro" style="width: 100px">
-                                <p:commandLink value="#{linha_endereco.bairro}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                                <p:commandLink value="#{linha_endereco.bairro}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
                             </p:column>
 
                             <p:column headerText="Cidade" style="width: 100px">
-                                <p:commandLink value="#{linha_endereco.cidade.cidade} - #{linha_endereco.cidade.uf}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"/>
+                                <p:commandLink value="#{linha_endereco.cidade.cidade} - #{linha_endereco.cidade.uf}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
                             </p:column>
                             
                             <p:column style="width:32px">
-                                <p:commandButton icon="fa fa-fw fa-remove" action="#{fisicaController.excluirEndereco(linha_endereco)}" update="form_fisica">
+                                <p:commandButton icon="fa fa-fw fa-remove" action="#{fisicaController.excluirEndereco(linha_endereco)}" update="form_fisica" disabled="#{!permissaoController.temPermissao('excluir_endereco_fisica')}">
                                     <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
                                 </p:commandButton>
                             </p:column>
                         </p:dataTable>
-                        <p:commandButton value="Adicionar Endereço" actionListener="#{fisicaController.pesquisaEndereco.novo()}" disabled="#{fisicaController.fisica.id eq -1}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco:panel_pesquisar_endereco"/>
+                        <p:commandButton value="Adicionar Endereço" actionListener="#{fisicaController.pesquisaEndereco.novo()}" disabled="#{!permissaoController.temPermissao('adicionar_endereco_fisica') or fisicaController.fisica.id eq -1}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco:panel_pesquisar_endereco"/>
                     </h:column>
                 </p:panelGrid>
             </div>
 
             <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" style="background: red; border-color: red"/>
-                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+                <p:commandButton value="Sim" type="button" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+                <p:commandButton value="Não" type="button" styleClass="ui-confirmdialog-no" icon="ui-icon-close" style="background: red; border-color: red"/>
             </p:confirmDialog>
         </h:form>
 
@@ -255,7 +255,7 @@
                             </h:column>
                             <p:commandButton value="#{fisicaController.pesquisaEndereco.endereco.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{fisicaController.salvarEndereco()}" update="panel_cep_encontrado"/>
                             <p:commandButton value="Novo" action="#{fisicaController.pesquisaEndereco.novo()}" update="panel_pesquisar_endereco"/>
-                            <p:commandButton value="Excluir" action="#{fisicaController.excluirEndereco(null)}" update="form_fisica:tbl_lista_pessoa_endereco panel_pesquisar_endereco" disabled="#{fisicaController.pesquisaEndereco.endereco.id eq -1}">
+                            <p:commandButton value="Excluir" action="#{fisicaController.excluirEndereco(null)}" update="form_fisica:tbl_lista_pessoa_endereco panel_pesquisar_endereco" disabled="#{!permissaoController.temPermissao('excluir_endereco_fisica') or fisicaController.pesquisaEndereco.endereco.id eq -1}">
                                 <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
                             </p:commandButton>
                         </h:panelGrid>

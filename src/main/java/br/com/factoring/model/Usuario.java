@@ -17,18 +17,27 @@ public class Usuario implements Serializable {
     private String senha;
     @Column(name = "ds_nome", length = 500)
     private String nome;
+    @Column(name = "is_administrador")
+    private Boolean administrador;
+    @JoinColumn(name = "id_grupo", referencedColumnName = "id")
+    @ManyToOne
+    private Grupo grupo;
 
     public Usuario() {
         this.id = -1;
         this.senha = "";
         this.nome = "";
+        this.administrador = false;
+        this.grupo = new Grupo();
     }
 
-    public Usuario(int id, String login, String senha, String nome) {
+    public Usuario(int id, String login, String senha, String nome, Boolean administrador, Grupo grupo) {
         this.id = id;
         this.login = login;
         this.senha = senha;
         this.nome = nome;
+        this.administrador = administrador;
+        this.grupo = grupo;
     }
 
     public int getId() {
@@ -61,6 +70,22 @@ public class Usuario implements Serializable {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public Boolean getAdministrador() {
+        return administrador;
+    }
+
+    public void setAdministrador(Boolean administrador) {
+        this.administrador = administrador;
+    }
+
+    public Grupo getGrupo() {
+        return grupo;
+    }
+
+    public void setGrupo(Grupo grupo) {
+        this.grupo = grupo;
     }
 
 }

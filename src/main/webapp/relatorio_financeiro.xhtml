@@ -5,15 +5,96 @@
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:f="http://xmlns.jcp.org/jsf/core"
       xmlns:p="http://primefaces.org/ui">
-    
+
     <f:subview id="header">
         <ui:include src="template/header.xhtml"/>
+        <ui:include src="template/loading.xhtml"/>
     </f:subview>
-    
-    <h:body>
-        <p:outputLabel value="RELATORIO FINANCEIRO" />
+
+    <h:body onload="#{relatorioFinanceiroController.loadPagina()}">
+        <div class="page-max-1200">
+            <p:panelGrid styleClass="ui-panelgrid-blank" columns="1" columnClasses="ui-grid-col-12" layout="grid">
+                <p:outputLabel value="RELATÓRIO FINANCEIRO" style="font-weight: bold"/>
+                <hr />
+            </p:panelGrid>
+        </div>
+
+        <h:form id="form_lancamento">
+            <div class="ui-fluid page-max-1200">
+                <p:panelGrid styleClass="ui-panelgrid-blank" columns="2" columnClasses="ui-grid-col-3, ui-grid-col-9" layout="grid">
+                    <h:column>                        
+                        <p:outputLabel value="Relatório" style="font-weight: bold" />
+                        <p:separator />
+
+                        <p:selectOneMenu value="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.tipoRelatorio}">
+                            <p:ajax event="change" update="@this" />
+                            <f:selectItem itemValue="extrato_geral" itemLabel="EXTRATO GERAL" />
+                            <f:selectItem itemValue="extrato_por_cliente" itemLabel="EXTRATO POR CLIENTE" />
+                            <f:selectItem itemValue="extrato_por_emitente" itemLabel="EXTRATO POR EMITENTE" />
+                        </p:selectOneMenu>
+                        <p:separator />
+
+                        <p:outputLabel value="Filtros" style="font-weight: bold" />
+                        <p:separator />
+                        <p:selectBooleanButton value="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.chkCliente}" onLabel="Cliente" offLabel="Cliente" onIcon="ui-icon-check" offIcon="ui-icon-close">
+                            <p:ajax event="change" update="panel_filtros" listener="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.limpar('chk_cliente')}"/>
+                        </p:selectBooleanButton>
+
+                        <p:selectBooleanButton value="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.chkEmitente}" onLabel="Emitente" offLabel="Emitente" onIcon="ui-icon-check" offIcon="ui-icon-close">
+                            <p:ajax event="change" update="panel_filtros" listener="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.limpar('chk_emitente')}"/>
+                        </p:selectBooleanButton>
+
+                        <p:selectBooleanButton value="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.chkTipoData}" onLabel="Data" offLabel="Data" onIcon="ui-icon-check" offIcon="ui-icon-close">
+                            <p:ajax event="change" update="panel_filtros" listener="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.limpar('chk_data')}"/>
+                        </p:selectBooleanButton>
+                        <p:separator style="height: 10px; background: gray"/>
+                        <h:panelGrid columns="2">
+                            
+                            <p:commandButton value="Visualizar" icon="fa fa-file-text-o" action="#{relatorioFinanceiroController.imprimir()}" ajax="false"/>
+                            <p:commandButton value="Limpar Filtro" icon="fa fa-close" action="#{relatorioFinanceiroController.limparFiltro()}" update="@all" style="background: red; border: red"/>
+                        </h:panelGrid>
+                    </h:column>
+
+                    <h:column>
+                        <h:panelGrid id="panel_filtros" style="width: 100%">
+                            <h:panelGrid columns="2" rendered="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.chkCliente}">
+                                <p:commandButton value="Pesquisar Cliente" action="#{pesquisaPessoaFind.pesquisar()}"/>
+                                <p:outputLabel value="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.cliente.nome}"/>
+                            </h:panelGrid>
+
+                            <h:panelGrid columns="2" rendered="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.chkEmitente}">
+                                <p:commandButton value="Pesquisar Emitente" action="#{pesquisaEmitenteFind.pesquisar()}" />
+                                <p:outputLabel value="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.emitente.nome}"/>
+                            </h:panelGrid>
+
+                            <h:panelGrid rendered="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.chkTipoData}">
+                                <p:selectOneMenu value="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.tipoData}">
+                                    <p:ajax event="change" update="@this panel_filtros" global="false"/>
+                                    <f:selectItem itemValue="a_vencer" itemLabel="A VENCER" />
+                                    <f:selectItem itemValue="vencendo_hoje" itemLabel="VENCENDO HOJE" />
+                                    <f:selectItem itemValue="vencido_a_7_dias" itemLabel="VENCIDO A 7 DIAS" />
+                                    <f:selectItem itemValue="faixa_vencimento" itemLabel="FAIXA DE VENCIMENTO" />
+                                    <f:selectItem itemValue="faixa_lancamento" itemLabel="FAIXA DE LANÇAMENTO" />
+                                </p:selectOneMenu>
+
+                                <h:panelGrid columns="1" rendered="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.tipoData eq 'faixa_vencimento' or relatorioFinanceiroController.filtroRelatorioFinanceiro.tipoData eq 'faixa_lancamento'}">
+                                    <p:outputLabel value="Data Inicial" />
+                                    <p:inputMask value="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.dataInicial}" mask="99/99/9999" style="width: 120px; text-align: center"/>
+                                    <p:outputLabel value="Data Final" />
+                                    <p:inputMask value="#{relatorioFinanceiroController.filtroRelatorioFinanceiro.dataFinal}" mask="99/99/9999" style="width: 120px; text-align: center"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                        
+                    </h:column>
+                </p:panelGrid>
+            </div>
+        </h:form>
+        
+        <ui:include src="template/pesquisaPessoa.xhtml"/>
+        <ui:include src="template/pesquisaEmitente.xhtml"/>
     </h:body>
-    
+
     <f:subview id="footer">
         <ui:include src="template/footer.xhtml"/>
     </f:subview>

@@ -64,5 +64,11 @@
             <to-view-id>/relatorio_financeiro.xhtml</to-view-id>
             <redirect/>
         </navigation-case>
+        
+        <navigation-case>
+            <from-outcome>grupo</from-outcome>
+            <to-view-id>/grupo.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
     </navigation-rule>
 </faces-config>
