@@ -4,11 +4,11 @@
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/factoring"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://192.168.1.102:5432/Factoring"/>
       <property name="javax.persistence.jdbc.user" value="postgres"/>
       <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
       <property name="javax.persistence.jdbc.password" value="989899"/>
-      <property name="javax.persistence.schema-generation.database.action" value="create"/>
+      <!-- <property name="javax.persistence.schema-generation.database.action" value="create"/> -->
     </properties>
   </persistence-unit>
 </persistence>
