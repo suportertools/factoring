@@ -413,6 +413,7 @@ public class FisicaController {
                 endereco = CEPService.procurar(endereco.getCep());
                 if (endereco == null) {
                     endereco = new Endereco();
+                    MensagemFlash.warn("Atenção", "CEP não encontrado!");
                     return;
                 }
                 selecionaTipoEndereco();
