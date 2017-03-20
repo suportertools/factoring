@@ -17,6 +17,7 @@ import br.com.factoring.model.FTipoDocumento;
 import br.com.factoring.model.Movimento;
 import br.com.factoring.model.Pessoa;
 import br.com.factoring.model.TipoDocumento;
+import br.com.factoring.utils.Datas;
 import br.com.factoring.utils.MensagemFlash;
 import br.com.factoring.utils.Moeda;
 import br.com.factoring.utils.Redirectx;
@@ -59,6 +60,8 @@ public class LancamentoController implements Serializable {
 
     private List<DetalheMovimentosEmitente> listaDetalheMovimentosEmitente = new ArrayList();
 
+    private List<PermissaoVencimento> listaPermissaoVencimento = new ArrayList();
+
     public LancamentoController() {
         loadListaTipoDocumento();
         loadListaTipoDocumentoEmitente();
@@ -78,6 +81,22 @@ public class LancamentoController implements Serializable {
     public String paginaLancamento() {
         Sessao.put("lancamentoController", new LancamentoController());
         return "lancamento";
+    }
+
+    public void verificarVencimento() {
+        if (movimento.getVencimentoString().isEmpty()) {
+            listaPermissaoVencimento.clear();
+        }
+
+        // DATA DE VENCIMENTO VENCIDO 
+        if (Datas.converteDataParaInteger(movimento.getVencimentoString()) < Datas.converteDataParaInteger(Datas.data())) {
+            listaPermissaoVencimento.add(new PermissaoVencimento(false, "Deseja lançar documento vencido?"));
+        }
+
+        // DATA DE VENCIMENTO À 10 ANOS
+        if (Datas.converteDataParaInteger(movimento.getVencimentoString()) > Datas.converteDataParaInteger(Datas.incrementarAnos(10, Datas.data()))) {
+            listaPermissaoVencimento.add(new PermissaoVencimento(false, "Deseja lançar documento com vencimento maior que 10 anos?"));
+        }
     }
 
     public void loadListaMovimentoEmitente() {
@@ -135,6 +154,15 @@ public class LancamentoController implements Serializable {
         if (movimento.getVencimentoOriginalString().isEmpty()) {
             MensagemFlash.warn("Atenção", "DIGITE UM VENCIMENTO ORIGINAL!");
             return;
+        }
+
+        if (!listaPermissaoVencimento.isEmpty()) {
+            for (PermissaoVencimento pv : listaPermissaoVencimento) {
+                if (!pv.confirma) {
+                    MensagemFlash.warn("CONFIRME", pv.descricao + "!");
+                    return;
+                }
+            }
         }
 
         if (movimento.getValor() < 0) {
@@ -226,7 +254,8 @@ public class LancamentoController implements Serializable {
         }
 
         dao.commit();
-
+        listaPermissaoVencimento.clear();
+        
         pesquisaLancamento.loadListaMovimento();
         loadListaMovimentoEmitente();
         MensagemFlash.info("Sucesso", "LANÇAMENTO SALVO!");
@@ -299,6 +328,7 @@ public class LancamentoController implements Serializable {
 
         loadListaUF();
         loadListaMovimentoEmitente();
+        listaPermissaoVencimento.clear();
 
         if (!pesquisaLancamento.listaEndereco.isEmpty()) {
             for (int i = 0; i < listaUF.size(); i++) {
@@ -320,6 +350,8 @@ public class LancamentoController implements Serializable {
         if (movimento.getId() == -1) {
             movimento.setVencimentoOriginal(movimento.getVencimento());
         }
+
+        verificarVencimento();
     }
 
     public final void loadListaTipoDocumento() {
@@ -532,6 +564,7 @@ public class LancamentoController implements Serializable {
             this.indexListaTipoDocumento = 0;
             this.listaTipoDocumento = new ArrayList();
             this.loadListaTipoDocumento();
+            this.listaEndereco = new ArrayList();
         }
 
         public PesquisaLancamento(Pessoa pessoa, String tipoVencimento, List<Movimento> listaMovimento, Float somaValores, String ordem, Integer indexListaTipoDocumento, List<SelectItem> listaTipoDocumento) {
@@ -705,5 +738,45 @@ public class LancamentoController implements Serializable {
         public void setValor_totalString(String valor_totalString) {
             this.valor_total = Moeda.converteUS$(valor_totalString);
         }
+    }
+
+    public class PermissaoVencimento {
+
+        private Boolean confirma;
+        private String descricao;
+
+        public PermissaoVencimento() {
+            this.confirma = false;
+            this.descricao = "";
+        }
+
+        public PermissaoVencimento(Boolean confirma, String descricao) {
+            this.confirma = confirma;
+            this.descricao = descricao;
+        }
+
+        public Boolean getConfirma() {
+            return confirma;
+        }
+
+        public void setConfirma(Boolean confirma) {
+            this.confirma = confirma;
+        }
+
+        public String getDescricao() {
+            return descricao;
+        }
+
+        public void setDescricao(String descricao) {
+            this.descricao = descricao;
+        }
+    }
+
+    public List<PermissaoVencimento> getListaPermissaoVencimento() {
+        return listaPermissaoVencimento;
+    }
+
+    public void setListaPermissaoVencimento(List<PermissaoVencimento> listaPermissaoVencimento) {
+        this.listaPermissaoVencimento = listaPermissaoVencimento;
     }
 }

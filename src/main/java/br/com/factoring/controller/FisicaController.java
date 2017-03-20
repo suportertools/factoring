@@ -16,6 +16,7 @@ import br.com.factoring.model.Juridica;
 import br.com.factoring.model.TipoDocumento;
 import br.com.factoring.model.TipoEndereco;
 import br.com.factoring.utils.CEPService;
+import br.com.factoring.utils.Datas;
 import br.com.factoring.utils.MensagemFlash;
 import br.com.factoring.utils.PF;
 import br.com.factoring.utils.Redirectx;
@@ -131,7 +132,14 @@ public class FisicaController {
             MensagemFlash.fatal("Atenção", "DIGITE UM NOME VÁLIDO!");
             return;
         }
-
+        
+        if (!fisica.getNascimentoString().isEmpty()){
+            if (Datas.calcularIdade(fisica.getNascimentoString()) > 150){
+                MensagemFlash.fatal("Atenção", "IDADE DA PESSOA INVÁLIDA!");
+                return;
+            }
+        }
+        
         if (!ValidaDocumento.isValidoCPF(fisica.getPessoa().getDocumento())) {
             MensagemFlash.fatal("Atenção", "DIGITE CPF VÁLIDO!");
             return;

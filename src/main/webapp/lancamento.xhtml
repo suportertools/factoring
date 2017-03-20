@@ -150,7 +150,7 @@
         <ui:include src="template/pesquisaPessoa.xhtml" />
 
         <h:form id="form_lancar_movimento">
-            <p:dialog widgetVar="dlg_lancar_movimento" header="Lançar Movimento" modal="true" width="800" resizable="false" responsive="true" position="top">
+            <p:dialog widgetVar="dlg_lancar_movimento" header="Lançar Movimento" modal="true" width="800" resizable="false" responsive="true" position="top" style="max-height:600px; overflow:auto">
                 <h:panelGroup id="panel_lancar_movimento" styleClass="ui-fluid" layout="block">
                     <p:focus for="input_documento" />
                     <p:messages closable="true" showDetail="true" />
@@ -265,11 +265,11 @@
                         <p:separator />
                     </h:panelGrid>
 
-                    <h:panelGrid columns="3">
+                    <h:panelGrid id="panel_vencimento_valor" columns="3">
                         <h:column>
                             <p:outputLabel value="Vencimento" style="font-weight: bold"/><br />
                             <p:inputMask value="#{lancamentoController.movimento.vencimentoString}" mask="99/99/9999" style="width: 120px; text-align: center">
-                                <p:ajax event="change" listener="#{lancamentoController.atualizaVencimentoOriginal()}" update="input_vencimento_original" global="false"/>
+                                <p:ajax event="change" listener="#{lancamentoController.atualizaVencimentoOriginal()}" update="input_vencimento_original panel_confirma_vencimento" global="false"/>
                             </p:inputMask>
                         </h:column>
 
@@ -284,6 +284,14 @@
                                 <p:ajax event="change" update="@this" global="false"/>
                             </p:inputText>
                         </h:column>
+                    </h:panelGrid>
+
+                    <h:panelGrid id="panel_confirma_vencimento">
+                        <p:panel rendered="#{lancamentoController.listaPermissaoVencimento.size() > 0}" style="width: 100%">
+                            <ui:repeat value="#{lancamentoController.listaPermissaoVencimento}" var="linha_permissao">
+                                <p:selectBooleanCheckbox value="#{linha_permissao.confirma}" itemLabel="#{linha_permissao.descricao}" style="font-weight: bold; color: red"/>
+                            </ui:repeat>
+                        </p:panel>
                     </h:panelGrid>
 
                     <h:panelGrid columns="1" style="width: 100%">

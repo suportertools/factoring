@@ -38,7 +38,7 @@ public class LancamentoDao extends DB {
                 list_where.add("m.dt_vencimento = CURRENT_DATE");
                 break;
             case "vencido_a_6_meses":
-                list_where.add("m.dt_vencimento < CURRENT_DATE - 180");
+                list_where.add("m.dt_vencimento >= CURRENT_DATE - 180");
                 break;
             case "vencido_todos":
                 list_where.add("m.dt_vencimento < CURRENT_DATE");
