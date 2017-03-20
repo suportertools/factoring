@@ -406,6 +406,7 @@ public class LancamentoController implements Serializable {
     public PesquisaLancamento getPesquisaLancamento() {
         if (Sessao.exist("pessoaToReturn")) {
             pesquisaLancamento.pessoa = (Pessoa) Sessao.get("pessoaToReturn", true);
+            pesquisaLancamento.loadListaEndereco();
             pesquisaLancamento.loadListaMovimento();
         }
         return pesquisaLancamento;
@@ -531,7 +532,6 @@ public class LancamentoController implements Serializable {
             this.indexListaTipoDocumento = 0;
             this.listaTipoDocumento = new ArrayList();
             this.loadListaTipoDocumento();
-            this.loadListaEndereco();
         }
 
         public PesquisaLancamento(Pessoa pessoa, String tipoVencimento, List<Movimento> listaMovimento, Float somaValores, String ordem, Integer indexListaTipoDocumento, List<SelectItem> listaTipoDocumento) {
