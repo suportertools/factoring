@@ -134,8 +134,13 @@ public class FisicaController {
         }
         
         if (!fisica.getNascimentoString().isEmpty()){
+            if (Datas.converteDataParaInteger(fisica.getNascimentoString()) > Datas.converteDataParaInteger(Datas.data())){
+                MensagemFlash.fatal("Atenção", "IDADE DA PESSOA, DEVE SER MENOR QUE DATA DE HOJE!");
+                return;
+            }
+            
             if (Datas.calcularIdade(fisica.getNascimentoString()) > 150){
-                MensagemFlash.fatal("Atenção", "IDADE DA PESSOA INVÁLIDA!");
+                MensagemFlash.fatal("Atenção", "IDADE DA PESSOA NÃO PODE SER MAIOR QUE 150 ANOS!");
                 return;
             }
         }
@@ -391,6 +396,8 @@ public class FisicaController {
 
         private Integer indexTipoEndereco;
         private List<SelectItem> listaTipoEndereco;
+        
+        private Boolean enderecoNaoEncontrado;
 
         public PesquisaEndereco() {
             this.endereco = new Endereco();
@@ -400,6 +407,8 @@ public class FisicaController {
 
             loadListaTipoEndereco();
             loadListaEndereco();
+            
+            this.enderecoNaoEncontrado = false;
         }
 
         public PesquisaEndereco(Endereco endereco, List<Endereco> listaEndereco, Integer indexTipoEndereco, List<SelectItem> listaTipoEndereco) {
@@ -411,6 +420,7 @@ public class FisicaController {
 
         public void novo() {
             endereco = new Endereco();
+            enderecoNaoEncontrado = false;
             loadListaTipoEndereco();
             loadListaEndereco();
         }
@@ -422,6 +432,7 @@ public class FisicaController {
                 if (endereco == null) {
                     endereco = new Endereco();
                     MensagemFlash.warn("Atenção", "CEP não encontrado!");
+                    enderecoNaoEncontrado = true;
                     return;
                 }
                 selecionaTipoEndereco();
@@ -486,6 +497,14 @@ public class FisicaController {
 
         public void setListaTipoEndereco(List<SelectItem> listaTipoEndereco) {
             this.listaTipoEndereco = listaTipoEndereco;
+        }
+
+        public Boolean getEnderecoNaoEncontrado() {
+            return enderecoNaoEncontrado;
+        }
+
+        public void setEnderecoNaoEncontrado(Boolean enderecoNaoEncontrado) {
+            this.enderecoNaoEncontrado = enderecoNaoEncontrado;
         }
 
     }
