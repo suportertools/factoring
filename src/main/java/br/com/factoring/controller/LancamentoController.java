@@ -12,11 +12,11 @@ import br.com.factoring.dao.PessoaDao;
 import br.com.factoring.model.Banco;
 import br.com.factoring.model.Cidade;
 import br.com.factoring.model.Emitente;
+import br.com.factoring.model.Endereco;
 import br.com.factoring.model.FTipoDocumento;
 import br.com.factoring.model.Movimento;
 import br.com.factoring.model.Pessoa;
 import br.com.factoring.model.TipoDocumento;
-import br.com.factoring.utils.AnaliseString;
 import br.com.factoring.utils.MensagemFlash;
 import br.com.factoring.utils.Moeda;
 import br.com.factoring.utils.Redirectx;
@@ -169,7 +169,7 @@ public class LancamentoController implements Serializable {
                 MensagemFlash.warn("Atenção", "DIGITE UM DOCUMENTO PARA O EMITENTE!");
                 return;
             }
-            
+
             Integer id_tipo_documento = Integer.valueOf(listaTipoDocumentoEmitente.get(indexListaTipoDocumentoEmitente).getDescription());
             if (id_tipo_documento == 1) {
                 if (!ValidaDocumento.isValidoCPF(movimento.getEmitente().getDocumento())) {
@@ -299,6 +299,21 @@ public class LancamentoController implements Serializable {
 
         loadListaUF();
         loadListaMovimentoEmitente();
+
+        if (!pesquisaLancamento.listaEndereco.isEmpty()) {
+            for (int i = 0; i < listaUF.size(); i++) {
+                if (listaUF.get(i).getDescription().equals(pesquisaLancamento.listaEndereco.get(0).getCidade().getUf())) {
+                    indexListaUF = i;
+                }
+            }
+
+            loadListaCidade();
+            for (int i = 0; i < listaCidade.size(); i++) {
+                if (Integer.valueOf(listaCidade.get(i).getDescription()) == pesquisaLancamento.listaEndereco.get(0).getCidade().getId()) {
+                    indexListaCidade = i;
+                }
+            }
+        }
     }
 
     public void atualizaVencimentoOriginal() {
@@ -505,6 +520,7 @@ public class LancamentoController implements Serializable {
         private String ordem;
         private Integer indexListaTipoDocumento;
         private List<SelectItem> listaTipoDocumento;
+        private List<Endereco> listaEndereco;
 
         public PesquisaLancamento() {
             this.pessoa = new Pessoa();
@@ -515,6 +531,7 @@ public class LancamentoController implements Serializable {
             this.indexListaTipoDocumento = 0;
             this.listaTipoDocumento = new ArrayList();
             this.loadListaTipoDocumento();
+            this.loadListaEndereco();
         }
 
         public PesquisaLancamento(Pessoa pessoa, String tipoVencimento, List<Movimento> listaMovimento, Float somaValores, String ordem, Integer indexListaTipoDocumento, List<SelectItem> listaTipoDocumento) {
@@ -525,6 +542,12 @@ public class LancamentoController implements Serializable {
             this.ordem = ordem;
             this.indexListaTipoDocumento = indexListaTipoDocumento;
             this.listaTipoDocumento = listaTipoDocumento;
+        }
+
+        public final void loadListaEndereco() {
+            this.listaEndereco.clear();
+
+            this.listaEndereco = new EnderecoDao().listaEndereco(pessoa.getId());
         }
 
         public final void loadListaTipoDocumento() {
@@ -624,6 +647,13 @@ public class LancamentoController implements Serializable {
             this.listaTipoDocumento = listaTipoDocumento;
         }
 
+        public List<Endereco> getListaEndereco() {
+            return listaEndereco;
+        }
+
+        public void setListaEndereco(List<Endereco> listaEndereco) {
+            this.listaEndereco = listaEndereco;
+        }
     }
 
     public class DetalheMovimentosEmitente {
