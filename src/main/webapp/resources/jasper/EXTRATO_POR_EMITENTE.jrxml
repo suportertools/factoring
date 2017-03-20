@@ -59,7 +59,7 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle">
 						<font fontName="Arial" size="7" isBold="true" isUnderline="false" pdfFontName="Helvetica-Bold"/>
 					</textElement>
-					<text><![CDATA[CHEQUE]]></text>
+					<text><![CDATA[DOCUMENTO]]></text>
 				</staticText>
 				<staticText>
 					<reportElement mode="Opaque" x="257" y="38" width="85" height="12" backcolor="#E2E2E2" uuid="100495c8-7c1c-49e3-a7cd-4aa1bfec00e8"/>
@@ -193,7 +193,7 @@
 			</textField>
 			<textField>
 				<reportElement x="181" y="0" width="74" height="13" uuid="c9b78691-3c4d-4fae-9e10-e1bf640bf617"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
+				<textElement textAlignment="Center" verticalAlignment="Middle">
 					<font fontName="Arial" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{documento}]]></textFieldExpression>
@@ -215,7 +215,7 @@
 			<textField pattern="dd/MM/yyyy">
 				<reportElement x="669" y="0" width="58" height="13" uuid="4973fc4c-f984-4bd7-9411-4855dd158aee"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font fontName="Arial" size="8"/>
+					<font fontName="Arial" size="9" isBold="true" pdfFontName="Helvetica-Bold"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{vencimento}]]></textFieldExpression>
 			</textField>
