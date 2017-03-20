@@ -394,6 +394,29 @@ public class Datas {
         return null;
     }   
     
+    public String decrementarAnos(int qtd, String data) {
+        if (isDataValida(data)) {
+            try {
+                if (qtd <= 0) {
+                    qtd = 1;
+                }
+                int[] d = Datas.DataToArrayInt(data);
+                d[2] = d[2] - qtd;
+                if ((d[1] == 2) && ((d[0] == 28) || (d[0] == 29))) {
+                    if (isBisexto(d[2])) {
+                        d[0] = 29;
+                    } else {
+                        d[0] = 28;
+                    }
+                }
+                return mascararData(d[0] + "/" + d[1] + "/" + d[2]);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }    
+    
     public static String mascararData(String data) {
         return Datas.converteData(Datas.converte(data));
     }    
