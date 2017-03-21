@@ -56,7 +56,7 @@ public class FisicaController {
     public void loadPagina() {
         if (!FacesContext.getCurrentInstance().isPostback()) {
             pesquisaFisica.loadListaFisica();
-            
+
             if (!new PermissaoController().temPermissao("lista_fisica")) {
                 Redirectx.go("dashboard");
             }
@@ -132,19 +132,19 @@ public class FisicaController {
             MensagemFlash.fatal("Atenção", "DIGITE UM NOME VÁLIDO!");
             return;
         }
-        
-        if (!fisica.getNascimentoString().isEmpty()){
-            if (Datas.converteDataParaInteger(fisica.getNascimentoString()) > Datas.converteDataParaInteger(Datas.data())){
+
+        if (!fisica.getNascimentoString().isEmpty()) {
+            if (Datas.converteDataParaInteger(fisica.getNascimentoString()) > Datas.converteDataParaInteger(Datas.data())) {
                 MensagemFlash.fatal("Atenção", "IDADE DA PESSOA, DEVE SER MENOR QUE DATA DE HOJE!");
                 return;
             }
-            
-            if (Datas.calcularIdade(fisica.getNascimentoString()) > 150){
+
+            if (Datas.calcularIdade(fisica.getNascimentoString()) > 150) {
                 MensagemFlash.fatal("Atenção", "IDADE DA PESSOA NÃO PODE SER MAIOR QUE 150 ANOS!");
                 return;
             }
         }
-        
+
         if (!ValidaDocumento.isValidoCPF(fisica.getPessoa().getDocumento())) {
             MensagemFlash.fatal("Atenção", "DIGITE CPF VÁLIDO!");
             return;
@@ -396,8 +396,12 @@ public class FisicaController {
 
         private Integer indexTipoEndereco;
         private List<SelectItem> listaTipoEndereco;
-        
+
         private Boolean enderecoNaoEncontrado;
+        private Boolean cadastrarEndereco;
+
+        private Integer indexLogradouro;
+        private List<SelectItem> listaLogradouro;
 
         public PesquisaEndereco() {
             this.endereco = new Endereco();
@@ -407,22 +411,49 @@ public class FisicaController {
 
             loadListaTipoEndereco();
             loadListaEndereco();
-            
+
             this.enderecoNaoEncontrado = false;
+            this.cadastrarEndereco = false;
+            this.indexLogradouro = 0;
+            this.listaLogradouro = new ArrayList();
+            loadListaLogradouro();
         }
 
+        /*
         public PesquisaEndereco(Endereco endereco, List<Endereco> listaEndereco, Integer indexTipoEndereco, List<SelectItem> listaTipoEndereco) {
             this.endereco = endereco;
             this.listaEndereco = listaEndereco;
             this.indexTipoEndereco = indexTipoEndereco;
             this.listaTipoEndereco = listaTipoEndereco;
         }
-
+         */
         public void novo() {
             endereco = new Endereco();
             enderecoNaoEncontrado = false;
+            cadastrarEndereco = false;
             loadListaTipoEndereco();
             loadListaEndereco();
+            loadListaLogradouro();
+        }
+
+        public final void loadListaLogradouro() {
+            indexLogradouro = 0;
+            listaLogradouro.clear();
+
+            List<Object> result = new EnderecoDao().listaLogradouro();
+
+            for (int i = 0; i < result.size(); i++) {
+                String linha = (String) result.get(i);
+                listaLogradouro.add(new SelectItem(i, linha, linha));
+            }
+        }
+
+        public void salvarCadastrarEndereco() {
+            novo();
+        }
+
+        public void cadastrarEndereco() {
+            cadastrarEndereco = true;
         }
 
         public final void loadListaEndereco() {
@@ -505,6 +536,30 @@ public class FisicaController {
 
         public void setEnderecoNaoEncontrado(Boolean enderecoNaoEncontrado) {
             this.enderecoNaoEncontrado = enderecoNaoEncontrado;
+        }
+
+        public Boolean getCadastrarEndereco() {
+            return cadastrarEndereco;
+        }
+
+        public void setCadastrarEndereco(Boolean cadastrarEndereco) {
+            this.cadastrarEndereco = cadastrarEndereco;
+        }
+
+        public Integer getIndexLogradouro() {
+            return indexLogradouro;
+        }
+
+        public void setIndexLogradouro(Integer indexLogradouro) {
+            this.indexLogradouro = indexLogradouro;
+        }
+
+        public List<SelectItem> getListaLogradouro() {
+            return listaLogradouro;
+        }
+
+        public void setListaLogradouro(List<SelectItem> listaLogradouro) {
+            this.listaLogradouro = listaLogradouro;
         }
 
     }

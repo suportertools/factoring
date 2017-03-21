@@ -149,7 +149,7 @@
                             <p:column headerText="Cidade" style="width: 100px">
                                 <p:commandLink value="#{linha_endereco.cidade.cidade} - #{linha_endereco.cidade.uf}" style="font-size: 10pt" action="#{fisicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
                             </p:column>
-                            
+
                             <p:column style="width:32px">
                                 <p:commandButton icon="fa fa-fw fa-remove" action="#{fisicaController.excluirEndereco(linha_endereco)}" update="form_fisica" disabled="#{!permissaoController.temPermissao('excluir_endereco_fisica')}">
                                     <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
@@ -200,7 +200,7 @@
 
         <h:form id="form_pesquisa_endereco">
             <p:defaultCommand target="btn_pesquisar_endereco" />
-            
+
             <p:dialog widgetVar="dlg_pesquisa_endereco" header="Pesquisar Endereço" modal="true" width="650" resizable="false" responsive="true" position="top">
                 <h:panelGroup id="panel_pesquisar_endereco" class="ui-fluid" layout="block">
                     <p:focus context="panel_pesquisar_endereco" />
@@ -213,10 +213,26 @@
                             <p:commandButton id="btn_pesquisar_endereco" value="Pesquisar" action="#{fisicaController.pesquisaEndereco.loadListaEndereco()}" update="panel_cep_encontrado" disabled="#{fisicaController.pesquisaEndereco.endereco.id ne -1}"/>
                         </h:column>
                     </p:panelGrid>
-                    
+
                     <p:panelGrid columns="1">
-                        <p:commandLink value="Cadastrar um novo Endereço" rendered="#{fisicaController.pesquisaEndereco.enderecoNaoEncontrado}" style="font-weight: bold"/>
+                        <p:commandLink value="Cadastrar um novo Endereço" action="#{fisicaController.pesquisaEndereco.cadastrarEndereco()}" rendered="#{fisicaController.pesquisaEndereco.enderecoNaoEncontrado}" style="font-weight: bold" update="panel_cadastrar_endereco"/>
                     </p:panelGrid>
+
+                    <h:panelGrid id="panel_cadastrar_endereco">
+                        <h:panelGrid columns="2">
+                            <h:column>
+                                <p:outputLabel value="Logradouro" /><br />
+                                <p:selectOneMenu value="#{fisicaController.pesquisaEndereco.indexLogradouro}">
+                                    <f:selectItems value="#{fisicaController.pesquisaEndereco.listaLogradouro}"/>
+                                </p:selectOneMenu>
+                            </h:column>
+                            
+                            <h:column>
+                                <p:outputLabel value="Endereço" /><br />
+                                <p:inputText value="#{fisicaController.pesquisaEndereco.endereco.endereco}" />
+                            </h:column>
+                        </h:panelGrid>
+                    </h:panelGrid>
 
                     <p:dataTable id="tbl_lista_endereco" value="#{fisicaController.pesquisaEndereco.listaEndereco}" var="linha_endereco" emptyMessage="Nenhum Endereço Encontrado." rendered="false">
                         <p:column headerText="#" style="width: 60px">
