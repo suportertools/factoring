@@ -76,7 +76,7 @@ public class EnderecoDao extends DB {
         );
         List<String> result = query.getResultList();
         List<String> retorno = new ArrayList();
-        
+
         for (int i = 0; i < result.size(); i++) {
             retorno.add(result.get(i));
         }
@@ -94,6 +94,22 @@ public class EnderecoDao extends DB {
                 + " FROM pes_cidade c \n "
                 + "WHERE c.ds_uf = '" + uf + "' \n "
                 + "ORDER BY c.ds_cidade", Cidade.class
+        );
+
+        try {
+            return query.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+
+    public List<Object> listaLogradouro() {
+        Query query = getEntityManager().createNativeQuery(
+                " SELECT p.ds_logradouro \n"
+                + "  FROM pes_endereco p \n "
+                + " GROUP BY p.ds_logradouro \n "
+                + " ORDER BY p.ds_logradouro"
         );
 
         try {
