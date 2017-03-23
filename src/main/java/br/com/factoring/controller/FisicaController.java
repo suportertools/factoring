@@ -14,19 +14,17 @@ import br.com.factoring.model.Endereco;
 import br.com.factoring.model.Fisica;
 import br.com.factoring.model.Juridica;
 import br.com.factoring.model.TipoDocumento;
-import br.com.factoring.model.TipoEndereco;
-import br.com.factoring.utils.CEPService;
 import br.com.factoring.utils.Datas;
 import br.com.factoring.utils.MensagemFlash;
 import br.com.factoring.utils.PF;
 import br.com.factoring.utils.Redirectx;
+import br.com.factoring.utils.Sessao;
 import br.com.factoring.utils.ValidaDocumento;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import javax.faces.model.SelectItem;
 
 /**
  *
@@ -42,7 +40,6 @@ public class FisicaController {
 
     private PesquisaEmpresa pesquisaEmpresa = new PesquisaEmpresa();
     private PesquisaFisica pesquisaFisica = new PesquisaFisica();
-    private PesquisaEndereco pesquisaEndereco = new PesquisaEndereco();
 
     public void loadFisica() {
         if (!FacesContext.getCurrentInstance().isPostback()) {
@@ -61,59 +58,6 @@ public class FisicaController {
                 Redirectx.go("dashboard");
             }
         }
-    }
-
-    public void salvarEndereco() {
-        if (pesquisaEndereco.getEndereco().getNumero().isEmpty()) {
-            MensagemFlash.fatal("Atenção", "DIGITE UM NÚMERO PARA O ENDEREÇO!");
-            return;
-        }
-
-        Dao dao = new Dao();
-
-        pesquisaEndereco.endereco.setPessoa(fisica.getPessoa());
-
-        dao.begin();
-        if (pesquisaEndereco.endereco.getId() == -1) {
-            if (!dao.save(pesquisaEndereco.endereco)) {
-                dao.rollback();
-                MensagemFlash.fatal("Erro", "NÃO FOI POSSÍVEL SALVAR O ENDEREÇO!");
-                return;
-            }
-        } else if (!dao.update(pesquisaEndereco.endereco)) {
-            dao.rollback();
-            MensagemFlash.fatal("Erro", "NÃO FOI POSSÍVEL ALTERAR O ENDEREÇO!");
-            return;
-        }
-
-        dao.commit();
-        loadListaEndereco();
-        MensagemFlash.info("Sucesso", "ENDEREÇO SALVO!");
-        PF.closeDialog("dlg_pesquisa_endereco");
-        PF.update("form_fisica");
-    }
-
-    public void excluirEndereco(Endereco e) {
-        if (e != null) {
-            pesquisaEndereco.endereco = e;
-        }
-
-        Dao dao = new Dao();
-
-        dao.begin();
-
-        if (!dao.remove(pesquisaEndereco.endereco)) {
-            dao.rollback();
-            MensagemFlash.error("Erro", "NÃO FOI POSSÍVEL EXCLUIR ENDEREÇO!");
-            return;
-        }
-
-        dao.commit();
-
-        pesquisaEndereco = new PesquisaEndereco();
-        loadListaEndereco();
-
-        MensagemFlash.info("Sucesso", "ENDEREÇO DELETADO!");
     }
 
     public void removerEmpresa() {
@@ -264,6 +208,10 @@ public class FisicaController {
     }
 
     public List<Endereco> getListaEndereco() {
+        if (Sessao.exist("enderecoToReturn")) {
+            Sessao.remove("enderecoToReturn");
+            loadListaEndereco();
+        }
         return listaEndereco;
     }
 
@@ -285,14 +233,6 @@ public class FisicaController {
 
     public void setPesquisaFisica(PesquisaFisica pesquisaFisica) {
         this.pesquisaFisica = pesquisaFisica;
-    }
-
-    public PesquisaEndereco getPesquisaEndereco() {
-        return pesquisaEndereco;
-    }
-
-    public void setPesquisaEndereco(PesquisaEndereco pesquisaEndereco) {
-        this.pesquisaEndereco = pesquisaEndereco;
     }
 
     public class PesquisaFisica {
@@ -387,180 +327,5 @@ public class FisicaController {
         public void setEmpresa(Juridica empresa) {
             this.empresa = empresa;
         }
-    }
-
-    public class PesquisaEndereco {
-
-        private Endereco endereco;
-        private List<Endereco> listaEndereco;
-
-        private Integer indexTipoEndereco;
-        private List<SelectItem> listaTipoEndereco;
-
-        private Boolean enderecoNaoEncontrado;
-        private Boolean cadastrarEndereco;
-
-        private Integer indexLogradouro;
-        private List<SelectItem> listaLogradouro;
-
-        public PesquisaEndereco() {
-            this.endereco = new Endereco();
-            this.listaEndereco = new ArrayList();
-            this.indexTipoEndereco = 0;
-            this.listaTipoEndereco = new ArrayList();
-
-            loadListaTipoEndereco();
-            loadListaEndereco();
-
-            this.enderecoNaoEncontrado = false;
-            this.cadastrarEndereco = false;
-            this.indexLogradouro = 0;
-            this.listaLogradouro = new ArrayList();
-            loadListaLogradouro();
-        }
-
-        /*
-        public PesquisaEndereco(Endereco endereco, List<Endereco> listaEndereco, Integer indexTipoEndereco, List<SelectItem> listaTipoEndereco) {
-            this.endereco = endereco;
-            this.listaEndereco = listaEndereco;
-            this.indexTipoEndereco = indexTipoEndereco;
-            this.listaTipoEndereco = listaTipoEndereco;
-        }
-         */
-        public void novo() {
-            endereco = new Endereco();
-            enderecoNaoEncontrado = false;
-            cadastrarEndereco = false;
-            loadListaTipoEndereco();
-            loadListaEndereco();
-            loadListaLogradouro();
-        }
-
-        public final void loadListaLogradouro() {
-            indexLogradouro = 0;
-            listaLogradouro.clear();
-
-            List<Object> result = new EnderecoDao().listaLogradouro();
-
-            for (int i = 0; i < result.size(); i++) {
-                String linha = (String) result.get(i);
-                listaLogradouro.add(new SelectItem(i, linha, linha));
-            }
-        }
-
-        public void salvarCadastrarEndereco() {
-            novo();
-        }
-
-        public void cadastrarEndereco() {
-            cadastrarEndereco = true;
-        }
-
-        public final void loadListaEndereco() {
-            listaEndereco.clear();
-            if (!endereco.getCep().isEmpty()) {
-                endereco = CEPService.procurar(endereco.getCep());
-                if (endereco == null) {
-                    endereco = new Endereco();
-                    MensagemFlash.warn("Atenção", "CEP não encontrado!");
-                    enderecoNaoEncontrado = true;
-                    return;
-                }
-                selecionaTipoEndereco();
-                listaEndereco.add(endereco);
-            }
-        }
-
-        public void selecionaTipoEndereco() {
-            endereco.setTipoEndereco((TipoEndereco) new Dao().find(new TipoEndereco(), Integer.valueOf(listaTipoEndereco.get(indexTipoEndereco).getDescription())));
-        }
-
-        public final void loadListaTipoEndereco() {
-            listaTipoEndereco.clear();
-
-            List<TipoEndereco> result = new EnderecoDao().listaTipoEndereco();
-
-            for (int i = 0; i < result.size(); i++) {
-                listaTipoEndereco.add(new SelectItem(
-                        i, result.get(i).getDescricao(), Integer.toString(result.get(i).getId())
-                ));
-            }
-        }
-
-        public void selecionar(Endereco e) {
-            endereco = e;
-            for (int i = 0; i < listaTipoEndereco.size(); i++) {
-                if (endereco.getTipoEndereco().getId() == Integer.valueOf(listaTipoEndereco.get(i).getDescription())) {
-                    indexTipoEndereco = i;
-                    break;
-                }
-            }
-            //fisica.setJuridica(j);
-        }
-
-        public Endereco getEndereco() {
-            return endereco;
-        }
-
-        public void setEndereco(Endereco endereco) {
-            this.endereco = endereco;
-        }
-
-        public List<Endereco> getListaEndereco() {
-            return listaEndereco;
-        }
-
-        public void setListaEndereco(List<Endereco> listaEndereco) {
-            this.listaEndereco = listaEndereco;
-        }
-
-        public Integer getIndexTipoEndereco() {
-            return indexTipoEndereco;
-        }
-
-        public void setIndexTipoEndereco(Integer indexTipoEndereco) {
-            this.indexTipoEndereco = indexTipoEndereco;
-        }
-
-        public List<SelectItem> getListaTipoEndereco() {
-            return listaTipoEndereco;
-        }
-
-        public void setListaTipoEndereco(List<SelectItem> listaTipoEndereco) {
-            this.listaTipoEndereco = listaTipoEndereco;
-        }
-
-        public Boolean getEnderecoNaoEncontrado() {
-            return enderecoNaoEncontrado;
-        }
-
-        public void setEnderecoNaoEncontrado(Boolean enderecoNaoEncontrado) {
-            this.enderecoNaoEncontrado = enderecoNaoEncontrado;
-        }
-
-        public Boolean getCadastrarEndereco() {
-            return cadastrarEndereco;
-        }
-
-        public void setCadastrarEndereco(Boolean cadastrarEndereco) {
-            this.cadastrarEndereco = cadastrarEndereco;
-        }
-
-        public Integer getIndexLogradouro() {
-            return indexLogradouro;
-        }
-
-        public void setIndexLogradouro(Integer indexLogradouro) {
-            this.indexLogradouro = indexLogradouro;
-        }
-
-        public List<SelectItem> getListaLogradouro() {
-            return listaLogradouro;
-        }
-
-        public void setListaLogradouro(List<SelectItem> listaLogradouro) {
-            this.listaLogradouro = listaLogradouro;
-        }
-
     }
 }

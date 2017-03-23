@@ -10,6 +10,7 @@ import br.com.factoring.model.Emitente;
 import br.com.factoring.model.Pessoa;
 import br.com.factoring.utils.PF;
 import br.com.factoring.utils.Sessao;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
@@ -21,7 +22,7 @@ import javax.faces.bean.SessionScoped;
  */
 @ManagedBean
 @SessionScoped
-public class PesquisaEmitenteFind {
+public class PesquisaEmitenteFind implements Serializable {
 
     private String nome;
     private List<Emitente> listaEmitente;

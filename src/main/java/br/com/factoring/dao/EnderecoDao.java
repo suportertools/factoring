@@ -119,4 +119,19 @@ public class EnderecoDao extends DB {
         }
         return new ArrayList();
     }
+
+    public Endereco pesquisaEndereco(String cep) {
+        Query query = getEntityManager().createNativeQuery(
+                " SELECT e.* \n"
+                + "  FROM pes_endereco e \n "
+                + " WHERE e.ds_cep = '" + cep + "' LIMIT 1", Endereco.class
+        );
+
+        try {
+            return (Endereco) query.getSingleResult();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return null;
+    }
 }

@@ -97,36 +97,36 @@
 
                         <p:dataTable id="tbl_lista_pessoa_endereco" value="#{juridicaController.listaEndereco}" var="linha_endereco" emptyMessage="Nenhum Endereço Adicionado.">
                             <p:column headerText="Tipo" style="width: 80px">
-                                <p:commandLink value="#{linha_endereco.tipoEndereco.descricao}" style="font-size: 10pt" action="#{juridicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco"  disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
+                                <p:commandLink value="#{linha_endereco.tipoEndereco.descricao}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
                             </p:column>
 
                             <p:column headerText="Logr" style="width: 60px; text-align: center">
-                                <p:commandLink value="#{linha_endereco.logradouro}" style="font-size: 10pt" action="#{juridicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
+                                <p:commandLink value="#{linha_endereco.logradouro}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
                             </p:column>
 
                             <p:column headerText="Endereço">
-                                <p:commandLink value="#{linha_endereco.endereco}" style="font-size: 10pt" action="#{juridicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
+                                <p:commandLink value="#{linha_endereco.endereco}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
                             </p:column>
 
                             <p:column headerText="Número" style="width: 80px; text-align: center">
-                                <p:commandLink value="#{linha_endereco.numero}" style="font-size: 10pt" action="#{juridicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
+                                <p:commandLink value="#{linha_endereco.numero}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
                             </p:column>
 
                             <p:column headerText="Bairro" style="width: 100px">
-                                <p:commandLink value="#{linha_endereco.bairro}" style="font-size: 10pt" action="#{juridicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
+                                <p:commandLink value="#{linha_endereco.bairro}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
                             </p:column>
 
                             <p:column headerText="Cidade" style="width: 100px">
-                                <p:commandLink value="#{linha_endereco.cidade.cidade} - #{linha_endereco.cidade.uf}" style="font-size: 10pt" action="#{juridicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
+                                <p:commandLink value="#{linha_endereco.cidade.cidade} - #{linha_endereco.cidade.uf}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
                             </p:column>
 
                             <p:column style="width:32px">
-                                <p:commandButton icon="fa fa-fw fa-remove" action="#{juridicaController.excluirEndereco(linha_endereco)}" update="form_juridica" disabled="#{!permissaoController.temPermissao('excluir_endereco_juridica')}">
+                                <p:commandButton icon="fa fa-fw fa-remove" action="#{pesquisaEnderecoFind.excluirEndereco(linha_endereco, 'form_juridica')}" update="form_juridica" disabled="#{!permissaoController.temPermissao('excluir_endereco_juridica')}">
                                     <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
                                 </p:commandButton>
                             </p:column>
                         </p:dataTable>
-                        <p:commandButton value="Adicionar Endereço" actionListener="#{juridicaController.pesquisaEndereco.novo()}" disabled="#{!permissaoController.temPermissao('adicionar_endereco_juridica') or juridicaController.juridica.id eq -1}" oncomplete="PF('dlg_pesquisa_endereco').show()" update="form_pesquisa_endereco:panel_pesquisar_endereco"/>
+                        <p:commandButton value="Adicionar Endereço" actionListener="#{pesquisaEnderecoFind.adicionarEndereco(juridicaController.juridica.pessoa, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('adicionar_endereco_juridica') or juridicaController.juridica.id eq -1}" />
                     </h:column>
                 </p:panelGrid>
             </div>
@@ -137,71 +137,7 @@
             </p:confirmDialog>
         </h:form>
 
-        <h:form id="form_pesquisa_endereco">
-            <p:defaultCommand target="btn_pesquisar_endereco" />
-
-            <p:dialog widgetVar="dlg_pesquisa_endereco" header="Pesquisar Endereço" modal="true" width="650" resizable="false" responsive="true" position="top">
-                <h:panelGroup id="panel_pesquisar_endereco" class="ui-fluid" layout="block">
-                    <p:focus context="panel_pesquisar_endereco" />
-                    <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-9, ui-grid-col-3" layout="grid">
-                        <h:column>
-                            <p:inputMask id="input_cep" value="#{juridicaController.pesquisaEndereco.endereco.cep}" placeholder="Digite o CEP" mask="99.999-999" disabled="#{juridicaController.pesquisaEndereco.endereco.id ne -1}" />
-                        </h:column>
-
-                        <h:column>
-                            <p:commandButton id="btn_pesquisar_endereco" value="Pesquisar" action="#{juridicaController.pesquisaEndereco.loadListaEndereco()}" update="panel_cep_encontrado" disabled="#{juridicaController.pesquisaEndereco.endereco.id ne -1}"/>
-                        </h:column>
-                    </p:panelGrid>
-
-                    <p:dataTable id="tbl_lista_endereco" value="#{juridicaController.pesquisaEndereco.listaEndereco}" var="linha_endereco" emptyMessage="Nenhum Endereço Encontrado." rendered="false">
-                        <p:column headerText="#" style="width: 60px">
-                            <p:outputLabel value="#{linha_endereco.id}" />
-                        </p:column>
-
-                        <p:column headerText="Endereço" >
-                            <p:commandLink value="#{linha_endereco.endereco}" actionListener="#{juridicaController.pesquisaEndereco.selecionar(linha_endereco)}" oncomplete="PF('dlg_pesquisa_endereco').hide()" update="form_juridica"/>
-                        </p:column>
-                    </p:dataTable>
-
-                    <h:panelGrid id="panel_cep_encontrado" styleClass="ui-panelgrid-blank" style="width: 100%">
-                        <p:messages closable="true" showDetail="true" />
-                        <h:panelGrid rendered="#{juridicaController.pesquisaEndereco.endereco.logradouro ne ''}">
-                            <p:outputLabel value="Endereço" style="font-weight: bold"/>
-                            <p:outputLabel value="#{juridicaController.pesquisaEndereco.endereco.logradouro} #{juridicaController.pesquisaEndereco.endereco.endereco}" />
-                            <p:outputLabel value="#{juridicaController.pesquisaEndereco.endereco.bairro}" />
-                            <p:outputLabel value="#{juridicaController.pesquisaEndereco.endereco.cidade.cidade} - #{juridicaController.pesquisaEndereco.endereco.cidade.uf}" />
-                        </h:panelGrid>
-
-                        <h:panelGrid columns="3" rendered="#{juridicaController.pesquisaEndereco.endereco.logradouro ne ''}" style="width: 100%">
-                            <h:column>
-                                <p:outputLabel value="Tipo" /><br />
-                                <p:selectOneMenu value="#{juridicaController.pesquisaEndereco.indexTipoEndereco}">
-                                    <p:ajax event="change" update="@this" listener="#{juridicaController.pesquisaEndereco.selecionaTipoEndereco}" global="false"/>
-                                    <f:selectItems value="#{juridicaController.pesquisaEndereco.listaTipoEndereco}"/>
-                                </p:selectOneMenu>
-                            </h:column>
-                            <h:column>
-                                <p:outputLabel value="Número" /><br />
-                                <p:inputText value="#{juridicaController.pesquisaEndereco.endereco.numero}">
-                                    <p:ajax event="change" update="@this" global="false"/>
-                                </p:inputText>
-                            </h:column>
-                            <h:column>
-                                <p:outputLabel value="Complemento" /><br />
-                                <p:inputText value="#{juridicaController.pesquisaEndereco.endereco.complemento}">
-                                    <p:ajax event="change" update="@this" global="false" />
-                                </p:inputText>
-                            </h:column>
-                            <p:commandButton value="#{juridicaController.pesquisaEndereco.endereco.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{juridicaController.salvarEndereco()}" update="panel_cep_encontrado"/>
-                            <p:commandButton value="Novo" action="#{juridicaController.pesquisaEndereco.novo()}" update="panel_pesquisar_endereco"/>
-                            <p:commandButton value="Excluir" action="#{juridicaController.excluirEndereco(null)}" update="form_juridica:tbl_lista_pessoa_endereco panel_pesquisar_endereco" disabled="#{!permissaoController.temPermissao('excluir_endereco_juridica') or juridicaController.pesquisaEndereco.endereco.id eq -1}">
-                                <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
-                            </p:commandButton>
-                        </h:panelGrid>
-                    </h:panelGrid>
-                </h:panelGroup>
-            </p:dialog>
-        </h:form>        
+        <ui:include src="template/pesquisaEndereco.xhtml"/> 
     </h:body>
 
     <f:subview id="footer">

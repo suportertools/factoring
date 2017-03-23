@@ -57,9 +57,7 @@ public class CEPService {
 
             CepJson cep_return;
             try (BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream(), charset))) {
-                System.err.println("READ LINE");
                 String retorno = in.readLine();
-                System.err.println("RETORNO NULL");
                 JSONObject jSONObject = new JSONObject(retorno);
 
                 if (jSONObject.getInt("resultado") == 0) {
