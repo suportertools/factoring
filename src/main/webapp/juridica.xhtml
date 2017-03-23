@@ -121,7 +121,7 @@
                             </p:column>
 
                             <p:column style="width:32px">
-                                <p:commandButton icon="fa fa-fw fa-remove" action="#{pesquisaEnderecoFind.excluirEndereco(linha_endereco, 'form_juridica')}" update="form_juridica" disabled="#{!permissaoController.temPermissao('excluir_endereco_juridica')}">
+                                <p:commandButton icon="fa fa-fw fa-remove" action="#{pesquisaEnderecoFind.excluirEndereco(linha_endereco)}" update="form_juridica" disabled="#{!permissaoController.temPermissao('excluir_endereco_juridica')}">
                                     <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
                                 </p:commandButton>
                             </p:column>
