@@ -9,13 +9,15 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.http.ParseException;
 import org.primefaces.json.JSONException;
 import org.primefaces.json.JSONObject;
 
 public class CEPService {
 
-    public static Endereco procurar(String cep) {
+    public static List<Endereco> procurar(String cep) {
         if (cep.isEmpty()) {
             return null;
         }
@@ -31,6 +33,8 @@ public class CEPService {
                 return null;
             }
 
+            List<Endereco> result = new ArrayList();
+
             Endereco endereco = new Endereco();
 
             endereco.setBairro(to_return.getBairro());
@@ -38,10 +42,11 @@ public class CEPService {
             endereco.setCidade(cidade);
             endereco.setEndereco(to_return.getLogradouro());
             endereco.setLogradouro(to_return.getTipo_logradouro());
+            result.add(endereco);
 
-            return endereco;
+            return result;
         }
-        return null;
+        return new ArrayList();
     }
 
     public static CepJson getCep(String cep) {

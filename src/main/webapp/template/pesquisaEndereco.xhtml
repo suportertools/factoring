@@ -28,33 +28,33 @@ and open the template in the editor.
                 </p:panelGrid>
 
                 <h:panelGrid id="panel_lista_endereco" style="width: 100%" rendered="#{pesquisaEnderecoFind.step.ATUAL eq pesquisaEnderecoFind.step.SELECIONAR_CEP}">
-                    <p:dataTable value="#{pesquisaEnderecoFind.listaEndereco}" var="linha_endereco" emptyMessage="Nenhum Endereço encontrado.">
+                    <p:dataTable value="#{pesquisaEnderecoFind.listaEndereco}" var="linha_endereco_pesquisa" emptyMessage="Nenhum Endereço encontrado.">
                         <p:column headerText="CEP" style="width: 80px; text-align: center">
-                            <p:commandLink value="#{linha_endereco.cep}" action="#{pesquisaEnderecoFind.selecionarCEP(linha_endereco)}" update="form_pesquisa_endereco:panel_pesquisar_endereco" />
+                            <p:commandLink value="#{linha_endereco_pesquisa.cep}" action="#{pesquisaEnderecoFind.selecionarCEP(linha_endereco_pesquisa)}" update="form_pesquisa_endereco:panel_pesquisar_endereco" />
                         </p:column>
 
                         <p:column headerText="Logradouro">
-                            <p:commandLink value="#{linha_endereco.logradouro}" action="#{pesquisaEnderecoFind.selecionarCEP(linha_endereco)}" update="form_pesquisa_endereco:panel_pesquisar_endereco" />
+                            <p:commandLink value="#{linha_endereco_pesquisa.logradouro}" action="#{pesquisaEnderecoFind.selecionarCEP(linha_endereco_pesquisa)}" update="form_pesquisa_endereco:panel_pesquisar_endereco" />
                         </p:column>
 
                         <p:column headerText="Endereço">
-                            <p:commandLink value="#{linha_endereco.endereco}" action="#{pesquisaEnderecoFind.selecionarCEP(linha_endereco)}" update="form_pesquisa_endereco:panel_pesquisar_endereco" />
+                            <p:commandLink value="#{linha_endereco_pesquisa.endereco}" action="#{pesquisaEnderecoFind.selecionarCEP(linha_endereco_pesquisa)}" update="form_pesquisa_endereco:panel_pesquisar_endereco" />
                         </p:column>
 
                         <p:column headerText="Bairro" style="text-align: center">
-                            <p:commandLink value="#{linha_endereco.bairro}" action="#{pesquisaEnderecoFind.selecionarCEP(linha_endereco)}" update="form_pesquisa_endereco:panel_pesquisar_endereco" />
+                            <p:commandLink value="#{linha_endereco_pesquisa.bairro}" action="#{pesquisaEnderecoFind.selecionarCEP(linha_endereco_pesquisa)}" update="form_pesquisa_endereco:panel_pesquisar_endereco" />
                         </p:column>
 
                         <p:column headerText="Cidade - UF" style="text-align: center">
-                            <p:commandLink value="#{linha_endereco.cidade.cidade} - #{linha_endereco.cidade.uf}" action="#{pesquisaEnderecoFind.selecionarCEP(linha_endereco)}" update="form_pesquisa_endereco:panel_pesquisar_endereco"/>
+                            <p:commandLink value="#{linha_endereco_pesquisa.cidade.cidade} - #{linha_endereco_pesquisa.cidade.uf}" action="#{pesquisaEnderecoFind.selecionarCEP(linha_endereco_pesquisa)}" update="form_pesquisa_endereco:panel_pesquisar_endereco"/>
                         </p:column>
                     </p:dataTable>
                 </h:panelGrid>
 
 
-                <h:panelGrid columns="1">
-                    <p:commandLink value="Cadastrar um novo Endereço" action="#{pesquisaEnderecoFind.actCadastrarEndereco()}" style="font-weight: bold" update="panel_cadastrar_endereco panel_cep_encontrado"/>
-                </h:panelGrid>
+                <p:panelGrid styleClass="ui-panelgrid-blank"  columns="1">
+                    <p:commandLink value="Cadastrar um novo Endereço" action="#{pesquisaEnderecoFind.actCadastrarEndereco()}" style="font-weight: bold; color: blue" update="panel_cadastrar_endereco panel_cep_encontrado"/>
+                </p:panelGrid>
 
                 <h:panelGrid id="panel_cadastrar_endereco" style="width: 100%">
                     <p:messages closable="true" showDetail="true" />
@@ -151,13 +151,14 @@ and open the template in the editor.
                             </h:column>
                         </h:panelGrid>
 
-                        <h:panelGrid columns="3" style="width: 100%">
-                            <p:commandButton value="#{pesquisaEnderecoFind.endereco.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{pesquisaEnderecoFind.salvarEndereco()}" update="panel_cep_encontrado"/>
-                            <p:commandButton value="Novo" action="#{pesquisaEnderecoFind.novo()}" update="panel_pesquisar_endereco"/>
-                            <p:commandButton value="Excluir" action="#{pesquisaEnderecoFind.excluirEndereco(null)}" disabled="#{!permissaoController.temPermissao('excluir_endereco_fisica') or pesquisaEnderecoFind.endereco.id eq -1}">
-                                <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
-                            </p:commandButton>
-                        </h:panelGrid>
+                    </h:panelGrid>
+                    
+                    <h:panelGrid columns="3" style="width: 100%" rendered="#{pesquisaEnderecoFind.step.ATUAL eq pesquisaEnderecoFind.step.SALVAR_CEP or pesquisaEnderecoFind.step.ATUAL eq pesquisaEnderecoFind.step.CADASTRAR_CEP}">
+                        <p:commandButton value="#{pesquisaEnderecoFind.endereco.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{pesquisaEnderecoFind.salvarEndereco()}" update="panel_cep_encontrado"/>
+                        <p:commandButton value="Novo" action="#{pesquisaEnderecoFind.novo()}" update="panel_pesquisar_endereco"/>
+                        <p:commandButton value="Excluir" action="#{pesquisaEnderecoFind.excluirEndereco(null)}" disabled="#{!permissaoController.temPermissao('excluir_endereco_fisica') or pesquisaEnderecoFind.endereco.id eq -1}">
+                            <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
+                        </p:commandButton>
                     </h:panelGrid>
                 </h:panelGrid>
             </h:panelGroup>

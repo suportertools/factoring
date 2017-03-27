@@ -1,8 +1,10 @@
 package br.com.factoring.model;
 
+import br.com.factoring.dao.EnderecoDao;
 import br.com.factoring.utils.Datas;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.*;
 
 @Entity
@@ -137,5 +139,9 @@ public class Pessoa implements Serializable {
         this.observacao = observacao;
     }
 
+    public List<Endereco> getListaEndereco(){
+        return new EnderecoDao().listaEndereco(this.id);
+    }
+    
 
 }

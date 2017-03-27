@@ -120,11 +120,27 @@ public class EnderecoDao extends DB {
         return new ArrayList();
     }
 
-    public Endereco pesquisaEndereco(String cep) {
+    public List<Endereco> pesquisaEndereco(String cep) {
         Query query = getEntityManager().createNativeQuery(
                 " SELECT e.* \n"
                 + "  FROM pes_endereco e \n "
-                + " WHERE e.ds_cep = '" + cep + "' LIMIT 1", Endereco.class
+                + " WHERE e.ds_cep = '" + cep + "'", Endereco.class
+        );
+
+        try {
+            return query.getResultList();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return new ArrayList();
+    }
+
+    public Endereco pesquisaEnderecoPessoaTipo(Integer id_pessoa, Integer id_tipo_endereco) {
+        Query query = getEntityManager().createNativeQuery(
+                " SELECT e.* \n "
+                + "  FROM pes_endereco e \n "
+                + " WHERE e.id_pessoa = " + id_pessoa + " \n "
+                + "   AND e.id_tipo_endereco = " + id_tipo_endereco, Endereco.class
         );
 
         try {

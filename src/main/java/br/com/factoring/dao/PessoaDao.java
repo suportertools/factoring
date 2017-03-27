@@ -112,4 +112,19 @@ public class PessoaDao extends DB {
         }
         return null;
     }
+
+    public Pessoa pessoaDefault() {
+        try {
+            Query qry = getEntityManager().createNativeQuery(
+                    " SELECT p.* \n "
+                    + "  FROM pes_pessoa p \n "
+                    + " WHERE p.id = 1", Pessoa.class
+            );
+
+            return (Pessoa) qry.getSingleResult();
+        } catch (Exception e) {
+            e.getMessage();
+        }
+        return null;
+    }
 }
