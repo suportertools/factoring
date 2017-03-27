@@ -120,44 +120,47 @@
                                 <p:ajax update="@this" global="false"/>
                             </p:inputTextarea>
                         </h:panelGrid>
-
-                        <h:panelGrid style="width: 100%">
-                            <p:outputLabel value="Lista de Endereços" />
-                        </h:panelGrid>
-
-                        <p:dataTable id="tbl_lista_pessoa_endereco" value="#{fisicaController.listaEndereco}" var="linha_endereco" emptyMessage="Nenhum Endereço Adicionado.">
-                            <p:column headerText="Tipo" style="width: 80px">
-                                <p:commandLink value="#{linha_endereco.tipoEndereco.descricao}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}" />
-                            </p:column>
-
-                            <p:column headerText="Logr" style="width: 60px; text-align: center">
-                                <p:commandLink value="#{linha_endereco.logradouro}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
-                            </p:column>
-
-                            <p:column headerText="Endereço">
-                                <p:commandLink value="#{linha_endereco.endereco}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
-                            </p:column>
-
-                            <p:column headerText="Número" style="width: 80px; text-align: center">
-                                <p:commandLink value="#{linha_endereco.numero}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
-                            </p:column>
-
-                            <p:column headerText="Bairro" style="width: 100px">
-                                <p:commandLink value="#{linha_endereco.bairro}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
-                            </p:column>
-
-                            <p:column headerText="Cidade" style="width: 100px">
-                                <p:commandLink value="#{linha_endereco.cidade.cidade} - #{linha_endereco.cidade.uf}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}"  disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
-                            </p:column>
-
-                            <p:column style="width:32px">
-                                <p:commandButton icon="fa fa-fw fa-remove" action="#{pesquisaEnderecoFind.excluirEndereco(linha_endereco)}" update="form_fisica" disabled="#{!permissaoController.temPermissao('excluir_endereco_fisica')}">
-                                    <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
-                                </p:commandButton>
-                            </p:column>
-                        </p:dataTable>
-                        <p:commandButton value="Adicionar Endereço" actionListener="#{pesquisaEnderecoFind.adicionarEndereco(fisicaController.fisica.pessoa, 'form_fisica')}" disabled="#{!permissaoController.temPermissao('adicionar_endereco_fisica') or fisicaController.fisica.id eq -1}" />
                     </h:column>
+                </p:panelGrid>
+                <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-12" layout="grid">
+                    <p:outputLabel value="Lista de Endereços" />
+
+                    <p:dataTable id="tbl_lista_pessoa_endereco" value="#{fisicaController.listaEndereco}" var="linha_endereco" emptyMessage="Nenhum Endereço Adicionado.">
+                        <p:column headerText="CEP" style="width: 100px; text-align: center">
+                            <p:commandLink value="#{linha_endereco.cep}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_juridica')}"/>
+                        </p:column>
+
+                        <p:column headerText="Tipo" style="width: 100px">
+                            <p:commandLink value="#{linha_endereco.tipoEndereco.descricao}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}" />
+                        </p:column>
+
+                        <p:column headerText="Logradouro" style="width: 120px; text-align: center">
+                            <p:commandLink value="#{linha_endereco.logradouro}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
+                        </p:column>
+
+                        <p:column headerText="Endereço">
+                            <p:commandLink value="#{linha_endereco.endereco}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
+                        </p:column>
+
+                        <p:column headerText="Número" style="width: 80px; text-align: center">
+                            <p:commandLink value="#{linha_endereco.numero}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
+                        </p:column>
+
+                        <p:column headerText="Bairro" style="width: 100px">
+                            <p:commandLink value="#{linha_endereco.bairro}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}" disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
+                        </p:column>
+
+                        <p:column headerText="Cidade" style="width: 140px">
+                            <p:commandLink value="#{linha_endereco.cidade.cidade} - #{linha_endereco.cidade.uf}" style="font-size: 10pt" action="#{pesquisaEnderecoFind.selecionar(linha_endereco, 'form_juridica')}"  disabled="#{!permissaoController.temPermissao('alterar_endereco_fisica')}"/>
+                        </p:column>
+
+                        <p:column style="width:32px">
+                            <p:commandButton icon="fa fa-fw fa-remove" action="#{pesquisaEnderecoFind.excluirEndereco(linha_endereco)}" update="form_fisica" disabled="#{!permissaoController.temPermissao('excluir_endereco_fisica')}">
+                                <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <p:commandButton value="Adicionar Endereço" actionListener="#{pesquisaEnderecoFind.adicionarEndereco(fisicaController.fisica.pessoa, 'form_fisica')}" disabled="#{!permissaoController.temPermissao('adicionar_endereco_fisica') or fisicaController.fisica.id eq -1}" />                    
                 </p:panelGrid>
             </div>
 

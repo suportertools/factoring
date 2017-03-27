@@ -193,6 +193,11 @@ public class PesquisaEnderecoFind implements Serializable {
 
         endereco.setPessoa(pessoa);
 
+        if (new EnderecoDao().pesquisaEnderecoPessoaTipo(endereco.getPessoa().getId(), endereco.getTipoEndereco().getId()) != null){
+            MensagemFlash.warn("Atenção", "TIPO DE ENDEREÇO JÁ ADIOCIONADO PARA ESTA PESSOA!");
+            return;
+        }
+        
         dao.begin();
         if (endereco.getId() == -1) {
             if (!dao.save(endereco)) {
