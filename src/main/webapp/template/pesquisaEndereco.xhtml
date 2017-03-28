@@ -19,7 +19,7 @@ and open the template in the editor.
 
                 <p:panelGrid columns="2" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-9, ui-grid-col-3" layout="grid">
                     <h:column>
-                        <p:inputMask id="input_cep" value="#{pesquisaEnderecoFind.endereco.cep}" placeholder="Digite o CEP" mask="99.999-999" disabled="#{pesquisaEnderecoFind.endereco.id ne -1}" />
+                        <p:inputMask id="input_cep" value="#{pesquisaEnderecoFind.endereco.cep}" placeholder="Digite o CEP" mask="99.999-999" disabled="#{pesquisaEnderecoFind.endereco.id ne -1 or pesquisaEnderecoFind.step.ATUAL eq pesquisaEnderecoFind.step.SELECIONAR_CEP_COM_CADASTRO or pesquisaEnderecoFind.step.ATUAL eq pesquisaEnderecoFind.step.CADASTRAR_CEP}" />
                     </h:column>
 
                     <h:column>
@@ -27,9 +27,9 @@ and open the template in the editor.
                     </h:column>
                 </p:panelGrid>
 
-                <h:panelGrid id="panel_lista_endereco" style="width: 100%" rendered="#{pesquisaEnderecoFind.step.ATUAL eq pesquisaEnderecoFind.step.SELECIONAR_CEP}">
+                <h:panelGrid id="panel_lista_endereco" style="width: 100%" rendered="#{pesquisaEnderecoFind.step.ATUAL eq pesquisaEnderecoFind.step.SELECIONAR_CEP or pesquisaEnderecoFind.step.ATUAL eq pesquisaEnderecoFind.step.SELECIONAR_CEP_COM_CADASTRO}">
                     <p:dataTable value="#{pesquisaEnderecoFind.listaEndereco}" var="linha_endereco_pesquisa" emptyMessage="Nenhum Endereço encontrado.">
-                        <p:column headerText="CEP" style="width: 80px; text-align: center">
+                        <p:column headerText="CEP" style="width: 100px; text-align: center">
                             <p:commandLink value="#{linha_endereco_pesquisa.cep}" action="#{pesquisaEnderecoFind.selecionarCEP(linha_endereco_pesquisa)}" update="form_pesquisa_endereco:panel_pesquisar_endereco" />
                         </p:column>
 
@@ -52,8 +52,8 @@ and open the template in the editor.
                 </h:panelGrid>
 
 
-                <p:panelGrid styleClass="ui-panelgrid-blank"  columns="1">
-                    <p:commandLink value="Cadastrar um novo Endereço" action="#{pesquisaEnderecoFind.actCadastrarEndereco()}" style="font-weight: bold; color: blue" update="panel_cadastrar_endereco panel_cep_encontrado"/>
+                <p:panelGrid styleClass="ui-panelgrid-blank"  columns="1" rendered="#{pesquisaEnderecoFind.step.ATUAL eq pesquisaEnderecoFind.step.SELECIONAR_CEP_COM_CADASTRO}">
+                    <p:commandLink value="Cadastrar um novo Endereço" action="#{pesquisaEnderecoFind.actCadastrarEndereco()}" style="font-weight: bold; color: blue" update="panel_pesquisar_endereco" />
                 </p:panelGrid>
 
                 <h:panelGrid id="panel_cadastrar_endereco" style="width: 100%">
@@ -101,7 +101,7 @@ and open the template in the editor.
                         <h:panelGrid columns="2" style="width: 100%">
                             <h:column>
                                 <p:outputLabel value="UF" /><br />
-                                <p:selectOneMenu value="#{pesquisaEnderecoFind.indexListaUF}" style=" width: 80px">
+                                <p:selectOneMenu value="#{pesquisaEnderecoFind.indexListaUF}" style=" width: 80px; opacity: .8" disabled="true">
                                     <p:ajax event="change" update="@this select_praca" listener="#{pesquisaEnderecoFind.loadListaCidade()}" global="false"/>
                                     <f:selectItems value="#{pesquisaEnderecoFind.listaUF}" />
                                 </p:selectOneMenu>
@@ -109,7 +109,7 @@ and open the template in the editor.
 
                             <h:column>
                                 <p:outputLabel value="Praça" /><br />
-                                <p:selectOneMenu id="select_praca" value="#{pesquisaEnderecoFind.indexListaCidade}" style=" width: 300px" filter="true" filterMatchMode="startsWith">
+                                <p:selectOneMenu id="select_praca" value="#{pesquisaEnderecoFind.indexListaCidade}" style=" width: 300px; opacity: .8" filter="true" filterMatchMode="startsWith" disabled="true">
                                     <p:ajax event="change" update="@this"  global="false"/>
                                     <f:selectItems value="#{pesquisaEnderecoFind.listaCidade}" />
                                 </p:selectOneMenu>
@@ -154,7 +154,7 @@ and open the template in the editor.
                     </h:panelGrid>
                     
                     <h:panelGrid columns="3" style="width: 100%" rendered="#{pesquisaEnderecoFind.step.ATUAL eq pesquisaEnderecoFind.step.SALVAR_CEP or pesquisaEnderecoFind.step.ATUAL eq pesquisaEnderecoFind.step.CADASTRAR_CEP}">
-                        <p:commandButton value="#{pesquisaEnderecoFind.endereco.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{pesquisaEnderecoFind.salvarEndereco()}" update="panel_cep_encontrado"/>
+                        <p:commandButton value="#{pesquisaEnderecoFind.endereco.id eq -1 ? 'Salvar' : 'Alterar'}" action="#{pesquisaEnderecoFind.salvarEndereco()}" update="panel_cep_encontrado panel_cadastrar_endereco"/>
                         <p:commandButton value="Novo" action="#{pesquisaEnderecoFind.novo()}" update="panel_pesquisar_endereco"/>
                         <p:commandButton value="Excluir" action="#{pesquisaEnderecoFind.excluirEndereco(null)}" disabled="#{!permissaoController.temPermissao('excluir_endereco_fisica') or pesquisaEnderecoFind.endereco.id eq -1}">
                             <p:confirm header="Excluir Endereço" message="Deseja excluir este entereço?" icon="ui-icon-alert" />

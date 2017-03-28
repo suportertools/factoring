@@ -10,6 +10,8 @@
         <f:subview id="header">
             <ui:include src="template/header.xhtml"/>
             <ui:include src="template/loading.xhtml"/>
+            
+            <f:event type="preRenderView" listener="#{usuarioController.loadCliente()}"/>
         </f:subview>
 
         <h:body>
@@ -17,16 +19,17 @@
                 <div class="container" style="margin: 0 auto; width: 300px">
                     <div class="ui-fluid" style="margin-top: 150px;  margin: 0 auto;">
                         <h3><p:outputLabel value="ENTRAR NO SISTEMA" /></h3>
+                        <h4><p:outputLabel value="#{usuarioController.cliente.nome}" /></h4>
                         <p:panelGrid columns="1" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-12" layout="grid" style="background: #f0f0f0; padding: 20px">
                             <p:outputLabel value="Login" style="font-weight: bold"/>
-                            <p:inputText id="input_usuario" value="#{usuarioController.usuario.login}" placeholder="Digite o Login">
+                            <p:inputText id="input_usuario" value="#{usuarioController.usuario.login}" placeholder="Digite o Login" disabled="#{usuarioController.cliente.id eq -1}">
                                 <p:focus for="input_usuario"/>
                             </p:inputText>
                             
                             <p:outputLabel value="Senha" style="font-weight: bold"/>
-                            <p:password value="#{usuarioController.usuario.senha}" placeholder="Digite a Senha"/>
+                            <p:password value="#{usuarioController.usuario.senha}" placeholder="Digite a Senha" disabled="#{usuarioController.cliente.id eq -1}"/>
                             
-                            <p:commandButton value="ENTRAR" action="#{usuarioController.entrar()}" />
+                            <p:commandButton value="ENTRAR" action="#{usuarioController.entrar()}" disabled="#{usuarioController.cliente.id eq -1}"/>
                         </p:panelGrid>
                     </div>
                 </div>

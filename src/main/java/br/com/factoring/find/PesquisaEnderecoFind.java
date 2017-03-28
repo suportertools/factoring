@@ -60,11 +60,10 @@ public class PesquisaEnderecoFind implements Serializable {
     public PesquisaEnderecoFind() {
         this.endereco = new Endereco();
         this.listaEndereco = new ArrayList();
+
         this.indexTipoEndereco = 0;
         this.listaTipoEndereco = new ArrayList();
-
         loadListaTipoEndereco();
-        //loadListaEndereco();
 
         this.indexLogradouro = 0;
         this.listaLogradouro = new ArrayList();
@@ -77,31 +76,7 @@ public class PesquisaEnderecoFind implements Serializable {
         this.formToUpdate = "";
     }
 
-    public void avancar() {
-        switch (step.ATUAL) {
-            case Step.PESQUISAR_CEP:
-                loadListaEndereco();
-                break;
-
-            case Step.SELECIONAR_CEP:
-                step.ATUAL = Step.SALVAR_CEP;
-                break;
-
-            case Step.CADASTRAR_CEP:
-                break;
-
-            case Step.SALVAR_CEP:
-                salvarEndereco();
-                break;
-
-            default:
-                break;
-        }
-    }
-
     public void adicionarEndereco(Pessoa p, String form_update) {
-        //Sessao.put("pesquisaEnderecoFind", new PesquisaEnderecoFind());
-
         endereco = new Endereco();
         pessoa = p;
         formToUpdate = form_update;
@@ -113,17 +88,17 @@ public class PesquisaEnderecoFind implements Serializable {
     }
 
     public void actCadastrarEndereco() {
-        if (endereco.getCep().isEmpty()) {
-            MensagemFlash.warn("Atenção", "DIGITE UM CEP PARA CADASTRO!");
-            return;
-        }
-
-        String cep_ = endereco.getCep();
-        endereco = new Endereco();
-        endereco.setCep(cep_);
-
+//        if (endereco.getCep().isEmpty()) {
+//            MensagemFlash.warn("Atenção", "DIGITE UM CEP PARA CADASTRO!");
+//            return;
+//        }
+//
+//        String cep_ = endereco.getCep();
+//        endereco = new Endereco();
+//        endereco.setCep(cep_);
+//
         step.ATUAL = Step.CADASTRAR_CEP;
-        loadListaUF();
+//        loadListaUF();
     }
 
     public void selecionarCEP(Endereco e) {
@@ -134,15 +109,10 @@ public class PesquisaEnderecoFind implements Serializable {
 
     public void novo() {
         step = new Step();
-        //    Pessoa p = endereco.getPessoa();
         endereco = new Endereco();
-        //    endereco.setPessoa(p);
-
-        //    enderecoNaoEncontrado = false;
-        //    cadastrarEndereco = false;
-        loadListaTipoEndereco();
-        loadListaEndereco();
-        loadListaLogradouro();
+        //loadListaTipoEndereco();
+        //loadListaEndereco();
+        //loadListaLogradouro();
     }
 
     public void selecionar(Endereco e, String up_form) {
@@ -159,10 +129,10 @@ public class PesquisaEnderecoFind implements Serializable {
         formToUpdate = up_form;
 
         step.ATUAL = Step.SALVAR_CEP;
-        
+
         PF.openDialog("dlg_pesquisa_endereco");
         PF.update("form_pesquisa_endereco");
-        
+
     }
 
     public void salvarEndereco() {
@@ -193,11 +163,11 @@ public class PesquisaEnderecoFind implements Serializable {
 
         endereco.setPessoa(pessoa);
 
-        if (new EnderecoDao().pesquisaEnderecoPessoaTipo(endereco.getPessoa().getId(), endereco.getTipoEndereco().getId()) != null){
+        if (new EnderecoDao().pesquisaEnderecoPessoaTipo(endereco.getPessoa().getId(), endereco.getTipoEndereco().getId()) != null) {
             MensagemFlash.warn("Atenção", "TIPO DE ENDEREÇO JÁ ADIOCIONADO PARA ESTA PESSOA!");
             return;
         }
-        
+
         dao.begin();
         if (endereco.getId() == -1) {
             if (!dao.save(endereco)) {
@@ -257,9 +227,6 @@ public class PesquisaEnderecoFind implements Serializable {
 
         List<String> result = new EnderecoDao().listaUF();
 
-        Pessoa p = new PessoaDao().pessoaDefault();
-        String uf_default = (p != null && !p.getListaEndereco().isEmpty()) ? p.getListaEndereco().get(0).getCidade().getUf() : null;
-        
         for (int i = 0; i < result.size(); i++) {
             listaUF.add(new SelectItem(
                     i,
@@ -267,7 +234,7 @@ public class PesquisaEnderecoFind implements Serializable {
                     result.get(i))
             );
 
-            if (uf_default != null && uf_default.equals(result.get(i))) {
+            if (endereco.getCidade().getUf().equals(result.get(i))) {
                 indexListaUF = i;
             }
         }
@@ -280,11 +247,6 @@ public class PesquisaEnderecoFind implements Serializable {
         listaCidade.clear();
 
         List<Cidade> result = new EnderecoDao().listaCidade(listaUF.get(indexListaUF).getDescription());
-        
-        Pessoa p = new PessoaDao().pessoaDefault();
-        Integer cidade_default = (p != null && !p.getListaEndereco().isEmpty()) ? p.getListaEndereco().get(0).getCidade().getId() : null;
-        
-        
         for (int i = 0; i < result.size(); i++) {
             listaCidade.add(new SelectItem(
                     i,
@@ -292,7 +254,7 @@ public class PesquisaEnderecoFind implements Serializable {
                     Integer.toString(result.get(i).getId()))
             );
 
-            if (cidade_default != null && cidade_default.equals(result.get(i).getId())) {
+            if (endereco.getCidade().getId() == result.get(i).getId()) {
                 indexListaCidade = i;
             }
         }
@@ -318,18 +280,43 @@ public class PesquisaEnderecoFind implements Serializable {
         listaEndereco.clear();
         if (!endereco.getCep().isEmpty()) {
 
-            List<Endereco> list_e = CEPService.procurar(endereco.getCep());
+            Endereco cep_return = CEPService.procurar(endereco.getCep());
 
-            if (list_e.isEmpty()) {
-                list_e = new EnderecoDao().pesquisaEndereco(endereco.getCep());
-
-                if (list_e.isEmpty()) {
-                    MensagemFlash.warn("Atenção", "CEP não encontrado!");
-                    step.ATUAL = Step.CADASTRAR_CEP;
-                }
+            if (cep_return == null) {
+                MensagemFlash.warn("Atenção", "DIGITE UM CEP VÁLIDO!");
+                return;
             }
 
-            if (!list_e.isEmpty()) {
+            List<Endereco> list_e = new EnderecoDao().pesquisaEndereco(endereco.getCep());
+
+            //  ENDEREÇO GENERICO ----------------------------------------------
+            if (cep_return.getEndereco().isEmpty() && list_e.isEmpty()) {
+                step.ATUAL = Step.CADASTRAR_CEP;
+
+                endereco.setCidade(cep_return.getCidade());
+
+                loadListaUF();
+                return;
+            }
+
+            //  ENDEREÇO ENCONTRADO --------------------------------------------
+            if (!cep_return.getEndereco().isEmpty() && list_e.isEmpty()) {
+                step.ATUAL = Step.SELECIONAR_CEP;
+
+                cep_return.setPessoa(pessoa);
+                
+                listaEndereco.add(cep_return);
+
+                endereco.setCidade(cep_return.getCidade());
+                loadListaUF();
+            }
+
+            //  ENDEREÇO GENERICO E ENDEREÇO CADASTRADO ------------------------
+            if (cep_return.getEndereco().isEmpty() && !list_e.isEmpty()) {
+                step.ATUAL = Step.SELECIONAR_CEP_COM_CADASTRO;
+
+                endereco.setCidade(cep_return.getCidade());
+
                 for (Endereco e : list_e) {
                     e.setId(-1);
                     e.setPessoa(pessoa);
@@ -338,10 +325,22 @@ public class PesquisaEnderecoFind implements Serializable {
 
                     listaEndereco.add(e);
                 }
-                step.ATUAL = Step.SELECIONAR_CEP;
+
+                loadListaUF();
+                return;
             }
 
-            loadListaUF();
+            //  ENDEREÇO ENCONTRADO E ENDEREÇO CADASTRADO ----------------------
+            if (!cep_return.getEndereco().isEmpty() && !list_e.isEmpty()) {
+                step.ATUAL = Step.SELECIONAR_CEP;
+
+                cep_return.setPessoa(pessoa);
+
+                listaEndereco.add(cep_return);
+                
+                endereco.setCidade(cep_return.getCidade());
+                loadListaUF();
+            }
         }
     }
 
@@ -460,10 +459,11 @@ public class PesquisaEnderecoFind implements Serializable {
     public class Step {
 
         public int ATUAL = 0;
-        public static final int PESQUISAR_CEP = 0;
+        private static final int PESQUISAR_CEP = 0;
         private static final int SELECIONAR_CEP = 1;
         private static final int CADASTRAR_CEP = 2;
         private static final int SALVAR_CEP = 3;
+        private static final int SELECIONAR_CEP_COM_CADASTRO = 4;
 
         public int getATUAL() {
             return ATUAL;
@@ -487,6 +487,10 @@ public class PesquisaEnderecoFind implements Serializable {
 
         public final int getSALVAR_CEP() {
             return SALVAR_CEP;
+        }
+
+        public final int getSELECIONAR_CEP_COM_CADASTRO() {
+            return SELECIONAR_CEP_COM_CADASTRO;
         }
 
     }

@@ -9,6 +9,7 @@ import br.com.factoring.connections.Dao;
 import br.com.factoring.dao.PermissaoDao;
 import br.com.factoring.dao.UsuarioDao;
 import br.com.factoring.model.Grupo;
+import br.com.factoring.model.Pessoa;
 import br.com.factoring.model.Usuario;
 import br.com.factoring.utils.MensagemFlash;
 import br.com.factoring.utils.Redirectx;
@@ -44,8 +45,30 @@ public class UsuarioController implements Serializable {
     private List<SelectItem> listaGrupo = new ArrayList();
     private Integer indexListaGrupo = 0;
 
+    private Pessoa cliente = new Pessoa();
+
     public UsuarioController() {
         loadListaGrupo();
+    }
+
+    public void loadCliente() {
+        if (!FacesContext.getCurrentInstance().isPostback()) {
+            HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
+            if (request.getParameter("cliente") != null) {
+                Sessao.put("cliente", request.getParameter("cliente"));
+                
+                cliente = (Pessoa) new Dao().find(new Pessoa(), 1);
+                if (cliente == null) {
+                    cliente = new Pessoa();
+                    Sessao.remove("cliente");
+                    MensagemFlash.fatal("Atenção", "NENHUM CLIENTE ENCONTRADO!");
+                }
+            } else {
+                cliente = new Pessoa();
+                Sessao.remove("cliente");
+                MensagemFlash.fatal("Atenção", "NENHUM CLIENTE ENCONTRADO!");
+            }
+        }
     }
 
     public void loadUsuario() {
@@ -59,7 +82,7 @@ public class UsuarioController implements Serializable {
     public void loadPagina() {
         if (!FacesContext.getCurrentInstance().isPostback()) {
             loadListaUsuario();
-            
+
             if (!new PermissaoController().temPermissao("lista_usuario")) {
                 Redirectx.go("dashboard");
             }
@@ -80,11 +103,11 @@ public class UsuarioController implements Serializable {
     }
 
     public void alterarSenha() {
-        if (novaSenha.isEmpty() || confirmaNovaSenha.isEmpty()){
+        if (novaSenha.isEmpty() || confirmaNovaSenha.isEmpty()) {
             MensagemFlash.fatal("Atenção", "DIGITE AS SENHAS VÁLIDAS!");
             return;
         }
-        
+
         if (!novaSenha.equals(confirmaNovaSenha)) {
             MensagemFlash.fatal("Atenção", "SENHAS NÃO CORRESPONDEM!");
             return;
@@ -111,9 +134,9 @@ public class UsuarioController implements Serializable {
 
     public String editar(Usuario u) {
         usuario = u;
-        
-        for (int i = 0; i < listaGrupo.size(); i++){
-            if (usuario.getGrupo().getId() == Integer.valueOf(listaGrupo.get(i).getDescription())){
+
+        for (int i = 0; i < listaGrupo.size(); i++) {
+            if (usuario.getGrupo().getId() == Integer.valueOf(listaGrupo.get(i).getDescription())) {
                 indexListaGrupo = i;
             }
         }
@@ -360,5 +383,13 @@ public class UsuarioController implements Serializable {
 
     public void setIndexListaGrupo(Integer indexListaGrupo) {
         this.indexListaGrupo = indexListaGrupo;
+    }
+
+    public Pessoa getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Pessoa cliente) {
+        this.cliente = cliente;
     }
 }
