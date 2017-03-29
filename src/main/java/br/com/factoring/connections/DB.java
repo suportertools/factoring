@@ -27,10 +27,10 @@ public class DB {
         if (entityManager == null) {
             if (!Sessao.exist("conexao")) {
                 String cliente = (String) Sessao.get("cliente");
-                if (cliente == null){
+                if (cliente == null) {
                     return null;
                 }
-                
+
                 try {
                     Map properties = new HashMap();
                     properties.put(PersistenceUnitProperties.CACHE_TYPE_DEFAULT, CacheType.SoftWeak);
@@ -40,10 +40,12 @@ public class DB {
                     properties.put(PersistenceUnitProperties.JDBC_PASSWORD, "989899");
                     properties.put(PersistenceUnitProperties.JDBC_URL, "jdbc:postgresql://192.168.1.102:5432/" + cliente);
                     EntityManagerFactory emf = Persistence.createEntityManagerFactory(cliente, properties);
-                    //String createTable = GenericaString.converterNullToString(GenericaRequisicao.getParametro("createTable"));
-                    //if (createTable.equals("criar")) {
-                    //    properties.put(EntityManagerFactoryProvider.DDL_GENERATION, EntityManagerFactoryProvider.CREATE_ONLY);
-                    //}
+
+                    Boolean createTable = true;
+                    if (createTable) {
+                        properties.put(PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.CREATE_ONLY);
+                    }
+
                     entityManager = emf.createEntityManager();
                     Sessao.put("conexao", emf);
                 } catch (Exception e) {
@@ -58,15 +60,6 @@ public class DB {
                 }
             }
         }
-
-//        try {
-//            if (entityManager == null) {
-//                EntityManagerFactory emf = Persistence.createEntityManagerFactory("persistence");
-//                entityManager = emf.createEntityManager();
-//            }
-//        } catch (Exception e) {
-//            e.getMessage();
-//        }
         return entityManager;
     }
 
