@@ -33,6 +33,10 @@ public class Pessoa implements Serializable {
     private String telefone3;
     @Column(name = "ds_observacao", length = 1000)
     private String observacao;
+    @Column(name = "ds_email1", length = 100)
+    private String email1;
+    @Column(name = "ds_email2", length = 100)
+    private String email2;
 
     public Pessoa() {
         this.id = -1;
@@ -44,9 +48,11 @@ public class Pessoa implements Serializable {
         this.telefone2 = "";
         this.telefone3 = "";
         this.observacao = "";
+        this.email1 = "";
+        this.email2 = "";
     }
 
-    public Pessoa(int id, String nome, Date cadastro, TipoDocumento tipoDocumento, String documento, String telefone1, String telefone2, String telefone3, String observacao) {
+    public Pessoa(int id, String nome, Date cadastro, TipoDocumento tipoDocumento, String documento, String telefone1, String telefone2, String telefone3, String observacao, String email1, String email2) {
         this.id = id;
         this.nome = nome;
         this.cadastro = cadastro;
@@ -56,6 +62,8 @@ public class Pessoa implements Serializable {
         this.telefone2 = telefone2;
         this.telefone3 = telefone3;
         this.observacao = observacao;
+        this.email1 = email1;
+        this.email2 = email2;
     }
 
     public int getId() {
@@ -65,8 +73,7 @@ public class Pessoa implements Serializable {
     public void setId(int id) {
         this.id = id;
     }
-    
-    
+
     public String getNome() {
         return nome;
     }
@@ -139,9 +146,24 @@ public class Pessoa implements Serializable {
         this.observacao = observacao;
     }
 
-    public List<Endereco> getListaEndereco(){
+    public List<Endereco> getListaEndereco() {
         return new EnderecoDao().listaEndereco(this.id);
     }
-    
+
+    public String getEmail1() {
+        return email1;
+    }
+
+    public void setEmail1(String email1) {
+        this.email1 = email1;
+    }
+
+    public String getEmail2() {
+        return email2;
+    }
+
+    public void setEmail2(String email2) {
+        this.email2 = email2;
+    }
 
 }

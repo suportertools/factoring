@@ -21,8 +21,14 @@
                 <h:form id="form_pesquisa_juridica">
                     <p:defaultCommand target="btn_pesquisar_juridica" />
                     <div class="ui-fluid">
-                        <p:panelGrid styleClass="ui-panelgrid-blank" columns="3" columnClasses="ui-grid-col-7, ui-grid-col-2, ui-grid-col-3" layout="grid">
-                            <p:inputText value="#{juridicaController.pesquisaJuridica.nome}" placeholder="Nome da Pessoa Jurídica"/>
+                        <p:panelGrid styleClass="ui-panelgrid-blank" columns="4" columnClasses="ui-grid-col-2, ui-grid-col-5, ui-grid-col-2, ui-grid-col-3" layout="grid">
+                            <p:selectOneMenu value="#{juridicaController.pesquisaJuridica.porPesquisa}">
+                                <p:ajax event="change" update="@this input_descricao_pesquisa" listener="#{juridicaController.pesquisaJuridica.alteraPorPesquisa()}" global="false" />
+                                <f:selectItem itemValue="nome" itemLabel="Nome"/>
+                                <f:selectItem itemValue="cpf" itemLabel="CPF"/>
+                                <f:selectItem itemValue="cnpj" itemLabel="CNPJ"/>
+                            </p:selectOneMenu>
+                            <p:inputMask id="input_descricao_pesquisa" value="#{juridicaController.pesquisaJuridica.descricao}" placeholder="Descrição da Pesquisa" mask="#{juridicaController.pesquisaJuridica.maskDocumento}"/>
                             <p:commandButton id="btn_pesquisar_juridica" value="Pesquisar" action="#{juridicaController.pesquisaJuridica.loadListaJuridica()}" update="form_lista_juridica"/>
                             <p:commandButton value="Cadastrar Pessoa Jurídica" action="#{juridicaController.paginaCadastrarJuridica()}" disabled="#{!permissaoController.temPermissao('cadastro_juridica')}"/>
                         </p:panelGrid>

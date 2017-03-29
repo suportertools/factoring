@@ -16,19 +16,23 @@ public class Juridica implements Serializable {
     @JoinColumn(name = "id_pessoa", referencedColumnName = "id", nullable = false)
     @ManyToOne
     private Pessoa pessoa;
-    @Column(name = "ds_inscricao_estadual", length = 300)
+    @Column(name = "ds_inscricao_estadual", length = 30)
     private String inscricaoEstadual;
-
+    @Column(name = "ds_inscricao_municipal", length = 30)
+    private String inscricaoMunicipal;
+    
     public Juridica() {
         this.id = -1;
         this.pessoa = new Pessoa();
         this.inscricaoEstadual = "";
+        this.inscricaoMunicipal = "";
     }
 
-    public Juridica(int id, Pessoa pessoa, String inscricaoEstadual) {
+    public Juridica(int id, Pessoa pessoa, String inscricaoEstadual, String inscricaoMunicipal) {
         this.id = id;
         this.pessoa = pessoa;
         this.inscricaoEstadual = inscricaoEstadual;
+        this.inscricaoMunicipal = inscricaoMunicipal;
     }
 
     public int getId() {
@@ -53,6 +57,14 @@ public class Juridica implements Serializable {
 
     public void setInscricaoEstadual(String inscricaoEstadual) {
         this.inscricaoEstadual = inscricaoEstadual;
+    }
+
+    public String getInscricaoMunicipal() {
+        return inscricaoMunicipal;
+    }
+
+    public void setInscricaoMunicipal(String inscricaoMunicipal) {
+        this.inscricaoMunicipal = inscricaoMunicipal;
     }
 
 }

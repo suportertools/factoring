@@ -43,8 +43,30 @@ public class JuridicaDao extends DB {
     }
 
     public List<Juridica> listaPesquisaJuridica(JuridicaController.PesquisaJuridica pj) {
-        if (pj.getNome().isEmpty()) {
+        if (pj.getDescricao().isEmpty()) {
             return new ArrayList();
+        }
+
+        List<String> list_where = new ArrayList();
+
+        switch (pj.getPorPesquisa()) {
+            case "nome":
+                list_where.add("TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + AnaliseString.normalizeLower(pj.getDescricao()) + "%'");
+                break;
+            case "cpf":
+            case "cnpj":
+                list_where.add("p.ds_documento = '" + pj.getDescricao() + "'");
+                break;
+        }
+
+        String WHERE = "";
+
+        for (String w : list_where) {
+            if (WHERE.isEmpty()) {
+                WHERE = " WHERE " + w + " \n ";
+            } else {
+                WHERE = " AND " + w + " \n ";
+            }
         }
 
         try {
@@ -52,7 +74,7 @@ public class JuridicaDao extends DB {
                     " SELECT j.* \n "
                     + " FROM pes_juridica j  \n "
                     + "INNER JOIN pes_pessoa p ON p.id = j.id_pessoa \n "
-                    + "WHERE TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + AnaliseString.normalizeLower(pj.getNome()) + "%' \n "
+                    + WHERE
                     + "ORDER BY p.ds_nome \n "
                     + "LIMIT 15", Juridica.class
             );

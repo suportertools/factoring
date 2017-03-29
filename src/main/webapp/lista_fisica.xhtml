@@ -21,14 +21,19 @@
                 <h:form id="form_pesquisa_fisica">
                     <p:defaultCommand target="btn_pesquisar_fisica" />
                     <div class="ui-fluid">
-                        <p:panelGrid styleClass="ui-panelgrid-blank" columns="3" columnClasses="ui-grid-col-7, ui-grid-col-2, ui-grid-col-3" layout="grid">
-                            <p:inputText value="#{fisicaController.pesquisaFisica.nome}" placeholder="Nome da Pessoa Física"/>
+                        <p:panelGrid styleClass="ui-panelgrid-blank" columns="4" columnClasses="ui-grid-col-2, ui-grid-col-5, ui-grid-col-2, ui-grid-col-3" layout="grid">
+                            <p:selectOneMenu value="#{fisicaController.pesquisaFisica.porPesquisa}">
+                                <p:ajax event="change" update="@this input_descricao_pesquisa" listener="#{fisicaController.pesquisaFisica.alteraPorPesquisa()}" global="false" />
+                                <f:selectItem itemValue="nome" itemLabel="Nome"/>
+                                <f:selectItem itemValue="cpf" itemLabel="CPF"/>
+                            </p:selectOneMenu>
+                            <p:inputMask id="input_descricao_pesquisa" value="#{fisicaController.pesquisaFisica.descricao}" placeholder="Descrição da Pesquisa" mask="#{fisicaController.pesquisaFisica.maskDocumento}"/>
                             <p:commandButton id="btn_pesquisar_fisica" value="Pesquisar" action="#{fisicaController.pesquisaFisica.loadListaFisica()}" update="form_lista_fisica"/>
                             <p:commandButton value="Cadastrar Pessoa Física" action="#{fisicaController.paginaCadastrarFisica()}" disabled="#{!permissaoController.temPermissao('cadastro_fisica')}"/>
                         </p:panelGrid>
                     </div>
                 </h:form>
-                
+
                 <h:form id="form_lista_fisica">
                     <h:panelGrid>
                         <p:dataTable value="#{fisicaController.pesquisaFisica.listaFisica}" var="linha_fisica" emptyMessage="Nenhuma Pessoa Física Encontrada.">

@@ -22,24 +22,45 @@ import javax.faces.bean.SessionScoped;
 @SessionScoped
 public class PesquisaPessoaFind {
 
-    private String nome;
+    private String descricao;
     private List<Pessoa> listaPessoa;
+    private String porPesquisa;
+    private String maskDocumento;
 
     public PesquisaPessoaFind() {
-        this.nome = "";
+        this.descricao = "";
         this.listaPessoa = new ArrayList();
+        this.porPesquisa = "";
+        this.maskDocumento = "";
     }
 
-    public PesquisaPessoaFind(String nome, List<Pessoa> listaPessoa) {
-        this.nome = nome;
+    public PesquisaPessoaFind(String descricao, List<Pessoa> listaPessoa, String porPesquisa, String maskDocumento) {
+        this.descricao = descricao;
         this.listaPessoa = listaPessoa;
+        this.porPesquisa = porPesquisa;
+        this.maskDocumento = maskDocumento;
     }
 
     public void pesquisar() {
-        nome = "";
+        descricao = "";
         loadListaPessoa();
         PF.update("form_pesquisa_pessoa");
         PF.openDialog("dlg_pesquisar_pessoa");
+    }
+
+    public void alteraPorPesquisa() {
+        this.descricao = "";
+        switch (porPesquisa) {
+            case "nome":
+                maskDocumento = "";
+                break;
+            case "cpf":
+                maskDocumento = "999.999.999-99";
+                break;
+            case "cnpj":
+                maskDocumento = "99.999.999/9999-99";
+                break;
+        }
     }
 
     public void loadListaPessoa() {
@@ -60,12 +81,28 @@ public class PesquisaPessoaFind {
         this.listaPessoa = listaPessoa;
     }
 
-    public String getNome() {
-        return nome;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public String getPorPesquisa() {
+        return porPesquisa;
+    }
+
+    public void setPorPesquisa(String porPesquisa) {
+        this.porPesquisa = porPesquisa;
+    }
+
+    public String getMaskDocumento() {
+        return maskDocumento;
+    }
+
+    public void setMaskDocumento(String maskDocumento) {
+        this.maskDocumento = maskDocumento;
     }
 
 }

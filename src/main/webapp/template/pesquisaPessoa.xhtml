@@ -7,18 +7,27 @@ and open the template in the editor.
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <h:form id="form_pesquisa_pessoa">
         <p:defaultCommand target="btn_pesquisar_pessoa" />
         <p:focus context="panel_pesquisar_pessoa" />
-        
+
         <p:dialog widgetVar="dlg_pesquisar_pessoa" header="Pesquisar uma Pessoa" modal="true" width="650" resizable="false" responsive="true" position="top">
             <div class="ui-fluid">
-                <p:panelGrid id="panel_pesquisar_pessoa" columns="2" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-9, ui-grid-col-3" layout="grid">
+                <p:panelGrid id="panel_pesquisar_pessoa" columns="3" styleClass="ui-panelgrid-blank" columnClasses="ui-grid-col-3, ui-grid-col-6, ui-grid-col-3" layout="grid">
+                    <p:selectOneMenu value="#{pesquisaPessoaFind.porPesquisa}">
+                        <p:ajax event="change" update="@this input_descricao_pesquisa" listener="#{pesquisaPessoaFind.alteraPorPesquisa()}" global="false" />
+                        <f:selectItem itemValue="nome" itemLabel="Nome"/>
+                        <f:selectItem itemValue="cpf" itemLabel="CPF"/>
+                        <f:selectItem itemValue="cnpj" itemLabel="CNPJ"/>
+                    </p:selectOneMenu>
+
                     <h:column>
-                        <p:inputText value="#{pesquisaPessoaFind.nome}" placeholder="Nome da Pessoa"/>
+                        <p:inputMask id="input_descricao_pesquisa" value="#{pesquisaPessoaFind.descricao}" placeholder="Descrição da Pesquisa" mask="#{pesquisaPessoaFind.maskDocumento}"/>
                     </h:column>
+                    
                     <h:column>
                         <p:commandButton id="btn_pesquisar_pessoa" value="Pesquisar" action="#{pesquisaPessoaFind.loadListaPessoa()}" update="tbl_lista_pessoa" icon="fa fa-search"/>
                     </h:column>

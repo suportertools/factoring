@@ -35,6 +35,7 @@
                                     <p:confirm header="Excluir Pessoa Física" message="Deseja realmente excluir esta Pessoa Física?" icon="ui-icon-alert" />
                                 </p:menuitem>
                                 <p:menuitem value="Lista de Físicas" action="lista_fisica" icon="fa fa-fw fa-list-ol" disabled="#{!permissaoController.temPermissao('lista_fisica')}"/>
+                                <p:menuitem value="Cadastrar Pessoa Jurídica" action="#{juridicaController.paginaCadastrarJuridica()}" icon="fa fa-fw fa-plus" disabled="#{!permissaoController.temPermissao('cadastro_juridica')}"/>
                             </p:submenu>
                         </p:menu>
                     </h:column>
@@ -43,14 +44,14 @@
                         <h:panelGrid columns="3" style="width: 100%" columnClasses="ui-grid-col-8, ui-grid-col-2, ui-grid-col-2">
                             <h:column>
                                 <p:outputLabel value="Nome"/>
-                                <p:inputText value="#{fisicaController.fisica.pessoa.nome}">
+                                <p:inputText value="#{fisicaController.fisica.pessoa.nome}" style="border-color: red">
                                     <p:ajax update="@this" global="false"/>
                                 </p:inputText>
                             </h:column>
 
                             <h:column>
                                 <p:outputLabel value="CPF"/>
-                                <p:inputMask value="#{fisicaController.fisica.pessoa.documento}" mask="999.999.999-99" />
+                                <p:inputMask value="#{fisicaController.fisica.pessoa.documento}" mask="999.999.999-99" style="border-color: red"/>
                             </h:column>
 
                             <h:column>
@@ -87,6 +88,22 @@
                             <p:inputText value="#{fisicaController.fisica.conjugue}">
                                 <p:ajax update="@this" global="false"/>
                             </p:inputText>
+                        </h:panelGrid>
+
+                        <h:panelGrid columns="2" style="width: 100%">
+                            <h:column>
+                                <p:outputLabel value="Email"/>
+                                <p:inputText value="#{fisicaController.fisica.pessoa.email1}">
+                                    <p:ajax update="@this" global="false"/>
+                                </p:inputText>
+                            </h:column>
+
+                            <h:column>
+                                <p:outputLabel value="Email 2"/>
+                                <p:inputText value="#{fisicaController.fisica.pessoa.email2}">
+                                    <p:ajax update="@this" global="false"/>
+                                </p:inputText>
+                            </h:column>
                         </h:panelGrid>
 
                         <h:panelGrid columns="2" style="width: 100%">

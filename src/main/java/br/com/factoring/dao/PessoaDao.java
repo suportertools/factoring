@@ -23,15 +23,37 @@ import javax.persistence.Query;
 public class PessoaDao extends DB {
 
     public List<Pessoa> listaPessoa(PesquisaPessoaFind pp) {
-        if (pp.getNome().isEmpty()) {
+        if (pp.getDescricao().isEmpty()) {
             return new ArrayList();
+        }
+
+        List<String> list_where = new ArrayList();
+
+        switch (pp.getPorPesquisa()) {
+            case "nome":
+                list_where.add("TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + AnaliseString.normalizeLower(pp.getDescricao()) + "%'");
+                break;
+            case "cpf":
+            case "cnpj":
+                list_where.add("p.ds_documento = '" + pp.getDescricao() + "'");
+                break;
+        }
+
+        String WHERE = "";
+
+        for (String w : list_where) {
+            if (WHERE.isEmpty()) {
+                WHERE = " WHERE " + w + " \n ";
+            } else {
+                WHERE = " AND " + w + " \n ";
+            }
         }
 
         try {
             Query qry = getEntityManager().createNativeQuery(
                     " SELECT p.* \n "
                     + " FROM pes_pessoa p \n "
-                    + "WHERE TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + AnaliseString.normalizeLower(pp.getNome()) + "%' \n "
+                    + WHERE 
                     + "ORDER BY p.ds_nome \n "
                     + "LIMIT 30", Pessoa.class
             );

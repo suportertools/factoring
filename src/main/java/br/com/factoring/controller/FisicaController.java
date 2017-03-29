@@ -52,7 +52,7 @@ public class FisicaController {
 
     public void loadPagina() {
         if (!FacesContext.getCurrentInstance().isPostback()) {
-            pesquisaFisica.loadListaFisica();
+            pesquisaFisica.novo();
 
             if (!new PermissaoController().temPermissao("lista_fisica")) {
                 Redirectx.go("dashboard");
@@ -237,33 +237,52 @@ public class FisicaController {
 
     public class PesquisaFisica {
 
-        private String nome;
+        private String descricao;
         private List<Fisica> listaFisica = new ArrayList();
+        private String porPesquisa;
+        private String maskDocumento;
 
         public void novo() {
-            listaFisica.clear();
-            nome = "";
+            this.listaFisica.clear();
+            this.descricao = "";
+            this.porPesquisa = "nome";
+            this.maskDocumento = "";
         }
 
         public void loadListaFisica() {
-            listaFisica.clear();
-            listaFisica = new FisicaDao().listaPesquisaFisica(PesquisaFisica.this);
+            this.listaFisica.clear();
+            this.listaFisica = new FisicaDao().listaPesquisaFisica(PesquisaFisica.this);
+        }
+
+        public void alteraPorPesquisa() {
+            this.descricao = "";
+            switch (porPesquisa) {
+                case "nome":
+                    maskDocumento = "";
+                    break;
+                case "cpf":
+                    maskDocumento = "999.999.999-99";
+                    break;
+                case "cnpj":
+                    maskDocumento = "99.999.999/9999-99";
+                    break;
+            }
         }
 
         public PesquisaFisica() {
-            this.nome = "";
+            this.descricao = "";
         }
 
-        public PesquisaFisica(String nome) {
-            this.nome = nome;
+        public PesquisaFisica(String descricao) {
+            this.descricao = descricao;
         }
 
-        public String getNome() {
-            return nome;
+        public String getDescricao() {
+            return descricao;
         }
 
-        public void setNome(String nome) {
-            this.nome = nome;
+        public void setDescricao(String descricao) {
+            this.descricao = descricao;
         }
 
         public List<Fisica> getListaFisica() {
@@ -272,6 +291,22 @@ public class FisicaController {
 
         public void setListaFisica(List<Fisica> listaFisica) {
             this.listaFisica = listaFisica;
+        }
+
+        public String getPorPesquisa() {
+            return porPesquisa;
+        }
+
+        public void setPorPesquisa(String porPesquisa) {
+            this.porPesquisa = porPesquisa;
+        }
+
+        public String getMaskDocumento() {
+            return maskDocumento;
+        }
+
+        public void setMaskDocumento(String maskDocumento) {
+            this.maskDocumento = maskDocumento;
         }
     }
 

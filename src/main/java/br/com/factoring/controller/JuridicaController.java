@@ -46,7 +46,7 @@ public class JuridicaController {
 
     public void loadPagina() {
         if (!FacesContext.getCurrentInstance().isPostback()) {
-            pesquisaJuridica.loadListaJuridica();
+            pesquisaJuridica.novo();
 
             if (!new PermissaoController().temPermissao("lista_juridica")) {
                 Redirectx.go("dashboard");
@@ -55,9 +55,7 @@ public class JuridicaController {
     }
 
     public void loadListaEndereco() {
-        listaEndereco.clear();
-
-        listaEndereco = new EnderecoDao().listaEndereco(juridica.getPessoa().getId());
+        this.listaEndereco = new EnderecoDao().listaEndereco(juridica.getPessoa().getId());
     }
 
     public void salvar() {
@@ -199,37 +197,56 @@ public class JuridicaController {
 
     public class PesquisaJuridica {
 
-        private String nome = "";
+        private String descricao = "";
         private List<Juridica> listaJuridica = new ArrayList();
+        private String porPesquisa;
+        private String maskDocumento;
 
         public void novo() {
-            listaJuridica.clear();
-            nome = "";
+            this.listaJuridica.clear();
+            this.descricao = "";
+            this.porPesquisa = "nome";
+            this.maskDocumento = "";
         }
 
         public void loadListaJuridica() {
             try {
-                listaJuridica.clear();
-                listaJuridica = new JuridicaDao().listaPesquisaJuridica(PesquisaJuridica.this);
+                this.listaJuridica.clear();
+                this.listaJuridica = new JuridicaDao().listaPesquisaJuridica(PesquisaJuridica.this);
             } catch (Exception e) {
                 e.getMessage();
             }
         }
 
+        public void alteraPorPesquisa() {
+            this.descricao = "";
+            switch (porPesquisa) {
+                case "nome":
+                    maskDocumento = "";
+                    break;
+                case "cpf":
+                    maskDocumento = "999.999.999-99";
+                    break;
+                case "cnpj":
+                    maskDocumento = "99.999.999/9999-99";
+                    break;
+            }
+        }
+
         public PesquisaJuridica() {
-            this.nome = "";
+            this.descricao = "";
         }
 
-        public PesquisaJuridica(String nome) {
-            this.nome = nome;
+        public PesquisaJuridica(String descricao) {
+            this.descricao = descricao;
         }
 
-        public String getNome() {
-            return nome;
+        public String getDescricao() {
+            return descricao;
         }
 
-        public void setNome(String nome) {
-            this.nome = nome;
+        public void setDescricao(String descricao) {
+            this.descricao = descricao;
         }
 
         public List<Juridica> getListaJuridica() {
@@ -238,6 +255,22 @@ public class JuridicaController {
 
         public void setListaJuridica(List<Juridica> listaJuridica) {
             this.listaJuridica = listaJuridica;
+        }
+
+        public String getPorPesquisa() {
+            return porPesquisa;
+        }
+
+        public void setPorPesquisa(String porPesquisa) {
+            this.porPesquisa = porPesquisa;
+        }
+
+        public String getMaskDocumento() {
+            return maskDocumento;
+        }
+
+        public void setMaskDocumento(String maskDocumento) {
+            this.maskDocumento = maskDocumento;
         }
     }
 }

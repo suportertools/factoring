@@ -22,16 +22,37 @@ import javax.persistence.Query;
 public class FisicaDao extends DB {
 
     public List<Fisica> listaPesquisaFisica(FisicaController.PesquisaFisica pf) {
-        if (pf.getNome().isEmpty()){
+        if (pf.getDescricao().isEmpty()) {
             return new ArrayList();
         }
-        
+
+        List<String> list_where = new ArrayList();
+
+        switch (pf.getPorPesquisa()) {
+            case "nome":
+                list_where.add("TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + AnaliseString.normalizeLower(pf.getDescricao()) + "%'");
+                break;
+            case "cpf":
+                list_where.add("p.ds_documento = '" + pf.getDescricao() + "'");
+                break;
+        }
+
+        String WHERE = "";
+
+        for (String w : list_where) {
+            if (WHERE.isEmpty()) {
+                WHERE = " WHERE " + w + " \n ";
+            } else {
+                WHERE = " AND " + w + " \n ";
+            }
+        }
+
         try {
             Query qry = getEntityManager().createNativeQuery(
-                    " SELECT f.* "+ " \n "
-                    + " FROM pes_fisica f "+ " \n "
-                    + "INNER JOIN pes_pessoa p ON p.id = f.id_pessoa "+ " \n "
-                    + "WHERE TRANSLATE(LOWER(p.ds_nome)) LIKE '%" + AnaliseString.normalizeLower(pf.getNome()) + "%' \n "
+                    " SELECT f.* " + " \n "
+                    + " FROM pes_fisica f " + " \n "
+                    + "INNER JOIN pes_pessoa p ON p.id = f.id_pessoa " + " \n "
+                    + WHERE
                     + "ORDER BY p.ds_nome \n "
                     + "LIMIT 30", Fisica.class
             );
