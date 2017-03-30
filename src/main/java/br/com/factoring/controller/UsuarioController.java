@@ -56,7 +56,7 @@ public class UsuarioController implements Serializable {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             if (request.getParameter("cliente") != null) {
                 Sessao.put("cliente", request.getParameter("cliente"));
-                
+
                 cliente = (Pessoa) new Dao().find(new Pessoa(), 1);
                 if (cliente == null) {
                     cliente = new Pessoa();
@@ -274,13 +274,15 @@ public class UsuarioController implements Serializable {
 
     public void sair() {
         try {
+            String cliente_sessao = (String) Sessao.get("cliente");
+            
             FacesContext conext = FacesContext.getCurrentInstance();
 
             HttpSession session = (HttpSession) conext.getExternalContext().getSession(false);
 
             session.invalidate();
 
-            FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml");
+            FacesContext.getCurrentInstance().getExternalContext().redirect("index.xhtml?cliente=" + cliente_sessao);
         } catch (Exception e) {
             e.getMessage();
         }
