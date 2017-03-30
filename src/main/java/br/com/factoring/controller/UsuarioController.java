@@ -55,17 +55,26 @@ public class UsuarioController implements Serializable {
         if (!FacesContext.getCurrentInstance().isPostback()) {
             HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
             if (request.getParameter("cliente") != null) {
+                if (request.getParameter("cliente") != Sessao.get("cliente")){
+                    cliente = new Pessoa();
+                    Sessao.remove("cliente");
+                    Sessao.remove("conexao");
+                }
+                
                 Sessao.put("cliente", request.getParameter("cliente"));
-
+                
                 cliente = (Pessoa) new Dao().find(new Pessoa(), 1);
+
                 if (cliente == null) {
                     cliente = new Pessoa();
                     Sessao.remove("cliente");
+                    Sessao.remove("conexao");
                     MensagemFlash.fatal("Atenção", "NENHUM CLIENTE ENCONTRADO!");
                 }
             } else {
                 cliente = new Pessoa();
                 Sessao.remove("cliente");
+                Sessao.remove("conexao");
                 MensagemFlash.fatal("Atenção", "NENHUM CLIENTE ENCONTRADO!");
             }
         }
