@@ -52,7 +52,7 @@
                     </c:choose>
                     
                     <f:facet name="options">
-                        <p:inputText style="margin-right:10px" placeholder="Pesquisar" rendered="#{usuarioController.usuarioSessao.id ne -1}"/>
+                        <p:inputText style="margin-right:10px" placeholder="Pesquisar" rendered="false"/>
                         <p:outputLabel value="#{usuarioController.usuarioSessao.nome}" style="margin-right:10px"/>
                         <p:commandButton value="Sair" action="#{usuarioController.sair()}" icon="fa fa-fw fa-sign-out" disabled="#{usuarioController.usuarioSessao.id eq -1}" style="background: red; border-color: red"/>
                     </f:facet>

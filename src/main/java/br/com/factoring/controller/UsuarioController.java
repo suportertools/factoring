@@ -48,7 +48,7 @@ public class UsuarioController implements Serializable {
     private Pessoa cliente = new Pessoa();
 
     public UsuarioController() {
-        loadListaGrupo();
+        
     }
 
     public void loadCliente() {
@@ -90,7 +90,10 @@ public class UsuarioController implements Serializable {
 
     public void loadPagina() {
         if (!FacesContext.getCurrentInstance().isPostback()) {
+            
             loadListaUsuario();
+            
+            loadListaGrupo();
 
             if (!new PermissaoController().temPermissao("lista_usuario")) {
                 Redirectx.go("dashboard");
@@ -241,6 +244,11 @@ public class UsuarioController implements Serializable {
     }
 
     public void excluir() {
+        if (usuario.getId() == 1){
+            MensagemFlash.fatal("Atenção", "USUÁRIO PRINCIPAL NÃO PODE SER EXCLUÍDO!");
+            return;
+        }
+        
         Dao dao = new Dao();
 
         dao.begin();
