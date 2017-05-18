@@ -122,6 +122,11 @@ public class JuridicaController {
     }
 
     public void excluir() {
+        if (juridica.getId() == 1){
+            MensagemFlash.fatal("Atenção", "CLIENTE NÃO PODE SER EXCLUÍDO!");
+            return;
+        }
+        
         Dao dao = new Dao();
 
         dao.begin();
